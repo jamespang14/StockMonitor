@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>{{ stock_display_nm }}</title>
+{% endblock %}
+
+{% block body %}
+<center><h3>{{ stock_display_nm }}</h3></center>
+
+<table>
+    <tr>
+        <th>Date</th>
+        <th>AdjClose</th>
+        <th>Close</th>
+        <th>High</th>
+        <th>Low</th>
+        <th>Open</th>
+        <th>Volume</th>
+    </tr>
+    {% for sdata in sdatas %}
+    <tr>
+        <td>{{ sdata.Date }}</td>
+        <td>{{ sdata.AdjClose }}</td>
+        <td>{{ sdata.Close }}</td>
+        <td>{{ sdata.High }}</td>
+        <td>{{ sdata.Low }}</td>
+        <td>{{ sdata.Open }}</td>
+        <td>{{ sdata.Volume }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

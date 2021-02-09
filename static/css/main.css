@@ -1,0 +1,45 @@
+.background {
+  background-color: #f7f8fb00;
+  text-align: center;
+}
+.loginStructure {
+  text-align: center;
+}
+.loginBackground {
+  background-color: rgba(255, 255, 255, 0.5);
+  background-size: 300px 100px;
+  width: 250px;
+  text-align: center;
+  margin: auto;
+  padding: 20px;
+}
+.submitButton {
+  padding: 5px 16px;
+}
+.input {
+  margin: 5px 0px 15px;
+  padding: 5px 12px;
+}
+.mainTitle {
+  background-color: #010b16;
+  color: #070b18;
+  padding: 10px;
+  text-align: -moz-left;
+}
+
+.homeButton {
+  color: #000000;
+}
+.listTitle {
+  padding-left: 20px;
+}
+th {
+  padding-left: 20px;
+}
+td {
+  padding-left: 20px;
+}
+
+.infoInput {
+  padding-left: 20px;
+}

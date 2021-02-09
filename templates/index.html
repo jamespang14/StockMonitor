@@ -1,9 +1,85 @@
 {% extends 'base.html' %}
 
 {% block head %}
-<title>Index</title>
+<title>Stock Monitor</title>
+
 {% endblock %}
 
 {% block body %}
-<h1>Hi This is Stock monitor</h1>
+<header>
+    Stock monitor
+</header>
+<section>
+    <h4>Date and time:{{ date_time }}</h4>
+</section>
+
+<section>
+    <nav>
+        <h4>Enter stock code:</h4>
+        <form action="/dashboard" method="POST">
+            <input type="text" name="stock_name" id="stock_name">
+            <input type="submit" value="Search">
+        </form>
+        <br>
+        <a href="/">Watch list</a><br><br>
+        <a href="/">Previous days</a><br><br>
+        <a href="/">Feedback</a><br><br>
+        <a href="/">Logout</a>
+    </nav>
+    <table>
+        <tr>
+            <th></th>
+            <th>Historic data</th>
+            <th>Watch list</th>
+            <th>Date</th>
+            <th>AdjClose</th>
+            <th>Close</th>
+            <th>High</th>
+            <th>Low</th>
+            <th>Open</th>
+            <th>Volume</th>
+        </tr>
+        <tr>
+            <td>{{ stock_display_nm }}</td>
+            <td><a href="/data/{{ stock_display_nm }}">Details</a></td>
+            <td><a href="/">Add</a></td>
+            <td>{{ sdatas[0].Date }}</td>
+            <td>{{ sdatas[0].AdjClose }}</td>
+            <td>{{ sdatas[0].Close }}</td>
+            <td>{{ sdatas[0].High }}</td>
+            <td>{{ sdatas[0].Low }}</td>
+            <td>{{ sdatas[0].Open }}</td>
+            <td>{{ sdatas[0].Volume }}</td>
+        </tr>
+    </table>
+    
+
+</section>
+<!-- 
+<aside>
+    <table>
+        <tr>
+            <th>Date</th>
+            <th>AdjClose</th>
+            <th>Close</th>
+            <th>High</th>
+            <th>Low</th>
+            <th>Open</th>
+            <th>Volume</th>
+        </tr>
+        {% for sdata in sdatas %}
+        <tr>
+            <td>{{ sdata.Date }}</td>
+            <td>{{ sdata.AdjClose }}</td>
+            <td>{{ sdata.Close }}</td>
+            <td>{{ sdata.High }}</td>
+            <td>{{ sdata.Low }}</td>
+            <td>{{ sdata.Open }}</td>
+            <td>{{ sdata.Volume }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</aside>    
+-->
+    
 {% endblock %}
