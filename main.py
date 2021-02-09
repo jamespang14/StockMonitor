@@ -22,10 +22,6 @@ class User(db.Model):
         return '<Task %r>' % self.user_id
 
 
-# BHP $10.25 just display $10.25
-# For shares under $1 display as $0.71
-# For under 10 cents display as $0.073
-
 @app.route('/', methods=['POST', 'GET'])
 def login():
     user = User.query.filter(
