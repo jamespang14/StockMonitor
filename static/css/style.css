@@ -15,7 +15,7 @@ body {
 }
 
 .side-bar {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgb(175, 175, 175);
   backdrop-filter: blur(15px);
   width: 290px;
   height: 100vh;
@@ -51,7 +51,7 @@ body {
 }
 
 .side-bar .menu .item a:hover {
-  background: #8621f8;
+  background: #6b6a6b;
   transition: 0.3s ease;
 }
 
@@ -97,10 +97,9 @@ body {
 }
 
 .main {
-  height: 100vh;
+  /* height: 100vh; */
   display: flex;
   justify-content: center;
-  align-items: center;
   padding: 50px;
 }
 

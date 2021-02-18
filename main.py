@@ -111,6 +111,7 @@ def data(stock_name):
         now = datetime.now()
         date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
 
+        
         with open('stock_data/'+stock_name+'.csv') as csv_file:
             data = csv.reader(csv_file, delimiter=',')
             first_line = True
@@ -134,6 +135,47 @@ def data(stock_name):
 
 @app.route('/test', methods=['POST', 'GET'])
 def test():
+    if request.method == 'POST':
+        stock_nm = request.form['stock_name']
+        stock_display_nm = str(stock_nm)
+        temp = st.get_current_price(stock_nm)
+        st.get_current_stock_history(stock_nm)
+        st_holders = st.stock_holders(stock_nm)
+        st_recco = st.stock_recommendations(stock_nm)
+        current_price = round(float(temp), 2)
+        now = datetime.now()
+        date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
+
+        with open('stock_data/'+stock_nm+'.csv') as csv_file:
+            data = csv.reader(csv_file, delimiter=',')
+            first_line = True
+            sdatas = []
+            for row in data:
+                if not first_line:
+                    sdatas.append({
+                        "Date": row[0],
+                        "AdjClose": round(float(row[1]), 2),
+                        "Close": round(float(row[2]), 2),
+                        "High": round(float(row[3]), 2),
+                        "Low": round(float(row[4]), 2),
+                        "Open": round(float(row[5]), 2),
+                        "Volume": row[6]
+                    })
+                else:
+                    first_line = False
+
+        return render_template("test.html",st_recco=st_recco , st_holders=st_holders, sdatas=sdatas,current_price=current_price, stock_display_nm=stock_display_nm, date_time=date_time)
+    else:
+        stock_nm = "voo"
+        stock_display_nm = "S&P 500"
+        temp = st.get_current_price(stock_nm)
+        current_price = round(float(temp), 2)
+        now = datetime.now()
+        st_holders=[]
+        date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
+
+        return render_template("test.html",st_holders=st_holders,current_price=current_price, stock_display_nm=stock_display_nm, date_time=date_time)
+
     return render_template('test.html')
 
 

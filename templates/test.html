@@ -8,29 +8,36 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" charset="utf-8"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </head>
 
 <body>
-
   <div class="menu-btn">
     <i class="fas fa-bars"></i>
   </div>
+  <br>
   <div class="side-bar">
     <div class="close-btn">
       <i class="fas fa-times"></i>
     </div>
     <div class="menu">
+      <div class="item">
+        <a href="#" class="sub-item">
+          Search stock code:
+          <form action="/test" method="POST">
+            <input type="text" name="stock_name" id="stock_name">
+            <input type="submit" value="Search">
+          </form>
+        </a>
+      </div>
       <div class="item"><a href="#"><i class="fas fa-desktop"></i>Dashboard</a></div>
       <div class="item">
         <a class="sub-btn"><i class="fas fa-table"></i>Watch List<i class="fas fa-angle-right dropdown"></i></a>
-        <div class="sub-menu">
-          <a href="#" class="sub-item">
-            Search stock code:
-            <form action="/dashboard" method="POST">
-              <input type="text" name="stock_name" id="stock_name">
-              <input type="submit" value="Search">
-            </form>
-          </a>
+        <div class="sub-menu"> 
+          <a href="#" class="sub-item">Stock 01</a>
           <a href="#" class="sub-item">Stock 02</a>
           <a href="#" class="sub-item">Stock 03</a>
         </div>
@@ -47,11 +54,76 @@
     </div>
   </div>
 
+  <div class="container">
+    <p>Date and time: {{ date_time }}</p>
+  </div>
 
   <section class="main">
-    <h1>Stock Monitor dasdboard</h1>
+
+    <div class="container">
+      <h4>5d Stock history</h4>
+      <table>
+        <tr>
+            <th>Date</th>
+            <th>AdjClose</th>
+            <th>Close</th>
+            <th>High</th>
+            <th>Low</th>
+            <th>Open</th>
+            <th>Volume</th>
+        </tr>
+        {% for sdata in sdatas %}
+        <tr>
+            <td>{{ sdata.Date }}</td>
+            <td>{{ sdata.AdjClose }}</td>
+            <td>{{ sdata.Close }}</td>
+            <td>{{ sdata.High }}</td>
+            <td>{{ sdata.Low }}</td>
+            <td>{{ sdata.Open }}</td>
+            <td>{{ sdata.Volume }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    </div>
+    <div class="container">
+      <div class="card" style="width:400px">
+        <div class="card-body">
+          <h2 class="card-title">{{ stock_display_nm }}</h2>
+          <h4 class="card-text">Current Price: {{ current_price }}</h4>
+          <a href="#" class="btn btn-primary">See balance sheet</a>
+          <a href="#" class="btn btn-primary">See cashflows</a>
+        </div>
+      </div>
+    </div>
   </section>
 
+  <div class = "container">
+    Holders: <br>
+    <table>
+      <tr>
+        <td>% of Shares Held by All Insider</td>
+        <td>{{ st_holders[0] }}</td>
+      </tr>
+      <tr>
+        
+        <td>% of Shares Held by Institutions</td>
+        <td>{{ st_holders[1] }}</td>
+      </tr>
+      <tr>
+        <td>% of Float Held by Institutions</td>
+        <td>{{ st_holders[2] }}</td>
+      </tr>
+      <tr>
+        <td>Number of Institutions Holding Shares</td>
+        <td>{{ st_holders[3] }}</td>
+      </tr>
+    </table>
+  </div>
+<br>
+  <div class = "container">
+    Analyst recommendations: <br>{{ st_recco }}
+  </div>
+ 
   <script type="text/javascript">
     $(document).ready(function () {
       //jquery for toggle sub menus
