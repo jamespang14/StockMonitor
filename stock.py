@@ -21,9 +21,9 @@ def get_current_stock_history(symbol):
 def get_current_price(symbol):
     ticker = yf.Ticker(symbol)
     todays_data = ticker.history(period='1d')
-    return todays_data['Close'][1]
+    return todays_data['Close'][0]
 
-#print(get_current_price('tsla'))
+print(get_current_price('tsla'))
 
 def get_stock_info(symbol):
     ticker = yf.Ticker(symbol)

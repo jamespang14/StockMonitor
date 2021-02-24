@@ -27,13 +27,13 @@
       <div class="item">
         <a href="#" class="sub-item">
           Search stock code:
-          <form action="/test" method="POST">
+          <form action="/dashboard" method="POST">
             <input type="text" name="stock_name" id="stock_name">
             <input type="submit" value="Search">
           </form>
         </a>
       </div>
-      <div class="item"><a href="#"><i class="fas fa-desktop"></i>Dashboard</a></div>
+      <div class="item"><a href="/dashboard"><i class="fas fa-desktop"></i>Dashboard</a></div>
       <div class="item">
         <a class="sub-btn"><i class="fas fa-table"></i>Watch List<i class="fas fa-angle-right dropdown"></i></a>
         <div class="sub-menu"> 
@@ -51,6 +51,7 @@
         </div>
       </div>
       <div class="item"><a href="#"><i class="fas fa-info-circle"></i>About Stock Monitor</a></div>
+      <div class="item"><a href="/"><i class="fas fa-user-alt-slash"></i>Logout</a></div>
     </div>
   </div>
 
@@ -59,46 +60,84 @@
   </div>
 
   <section class="main">
-
     <div class="container">
       <h4>5d Stock history</h4>
       <table>
         <tr>
-            <th>Date</th>
-            <th>AdjClose</th>
-            <th>Close</th>
-            <th>High</th>
-            <th>Low</th>
-            <th>Open</th>
-            <th>Volume</th>
+          <th>Date</th>
+          {% for sdata in sdatas %}
+          <td style = "padding-right:5px">{{ sdata.Date }}</td>
+          {% endfor %}
         </tr>
-        {% for sdata in sdatas %}
         <tr>
-            <td>{{ sdata.Date }}</td>
-            <td>{{ sdata.AdjClose }}</td>
-            <td>{{ sdata.Close }}</td>
-            <td>{{ sdata.High }}</td>
-            <td>{{ sdata.Low }}</td>
-            <td>{{ sdata.Open }}</td>
-            <td>{{ sdata.Volume }}</td>
+          <th style = "padding-right:5px">AdjClose</th>
+          {% for sdata in sdatas %}
+          <td style = "padding-right:5px">{{ sdata.AdjClose }}</td>
+          {% endfor %}
         </tr>
-        {% endfor %}
+        <tr>
+          <th>Close</th>
+          {% for sdata in sdatas %}
+          <td style = "padding-right:5px">{{ sdata.Close }}</td>
+          {% endfor %}
+        </tr>
+        <tr>
+          <th>High</th>
+          {% for sdata in sdatas %}
+          <td style = "padding-right:5px">{{ sdata.High }}</td>
+          {% endfor %}
+        </tr>
+        <tr>
+          <th>Low</th>
+          {% for sdata in sdatas %}
+          <td style = "padding-right:5px">{{ sdata.Low }}</td>
+          {% endfor %}
+        </tr>
+        <tr>
+          <th>Open</th>
+          {% for sdata in sdatas %}
+          <td style = "padding-right:5px">{{ sdata.Open }}</td>
+          {% endfor %}
+        </tr>
+        <tr>
+          <th>Volume</th>
+          {% for sdata in sdatas %}
+          <td style = "padding-right:5px">{{ sdata.Volume }}</td>
+          {% endfor %}
+        </tr>
+        <tr>
+          <th>VWAP</th>
+          <td style = "padding-right:5px">{{vwap}}</td>
+        </tr>
+        <tr>
+          <th>News</th>
+          <td><a href="https://www.google.com/news?q={{ stock_display_nm }}" target="_blank">Link</a></td>
+        </tr>
     </table>
+    <br>
+    <th style = "padding-top:10px"><a href="#" class="btn btn-primary">See all Data</a></th>
     </div>
     <div class="container">
       <div class="card" style="width:400px">
         <div class="card-body">
           <h2 class="card-title">{{ stock_display_nm }}</h2>
           <h4 class="card-text">Current Price: {{ current_price }}</h4>
-          <a href="#" class="btn btn-primary">See balance sheet</a>
-          <a href="#" class="btn btn-primary">See cashflows</a>
+          <a href="#" class="btn btn-primary">Add Watchlist</a>
+          <a href="#" class="btn btn-primary">See CF & BS</a> 
+          <a href="#" class="btn btn-primary">Analysis</a>     
         </div>
       </div>
     </div>
   </section>
 
   <div class = "container">
-    Holders: <br>
+    <h5>Intra-day trades:</h5>
+    <a href="#" class="btn btn-primary">Today</a>
+    <a href="#" class="btn btn-primary">Yestrday</a><br><br>
+  </div>
+
+  <div class = "container">
+    <h5>Stock Holders: </h5>
     <table>
       <tr>
         <td>% of Shares Held by All Insider</td>
@@ -114,7 +153,7 @@
         <td>{{ st_holders[2] }}</td>
       </tr>
       <tr>
-        <td>Number of Institutions Holding Shares</td>
+        <td style = "padding-right:5px">Number of Institutions Holding Shares</td>
         <td>{{ st_holders[3] }}</td>
       </tr>
     </table>
