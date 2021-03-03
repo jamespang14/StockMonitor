@@ -15,7 +15,7 @@ body {
 }
 
 .side-bar {
-  background: rgb(175, 175, 175);
+  background: rgb(219, 219, 219);
   backdrop-filter: blur(15px);
   width: 290px;
   height: 100vh;
@@ -51,7 +51,7 @@ body {
 }
 
 .side-bar .menu .item a:hover {
-  background: #6b6a6b;
+  background: #c0bfc033;
   transition: 0.3s ease;
 }
 
