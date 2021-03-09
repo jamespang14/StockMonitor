@@ -1,32 +1,244 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
 
-{% block head %}
-<title>{{ stock_display_nm }}</title>
-{% endblock %}
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" charset="utf-8"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <style>
+    html {
+      height: 100%;
+      width: 100%;
+    }
+    body {
+      min-height: 100%;
+    }
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        padding-right:10px;
+        padding-left:10px;
+        white-space: nowrap;
+    }
+  </style>
+</head>
 
-{% block body %}
-<center><h3>{{ stock_display_nm }}</h3></center>
+<body>
+  <div class="menu-btn">
+    <i class="fas fa-bars"></i>
+  </div>
+  <br>
+  <div class="side-bar">
+    <div class="close-btn">
+      <i class="fas fa-times"></i>
+    </div>
+    <div class="menu">
+      <div class="item">
+        <a href="#" class="sub-item">
+          Search stock code:
+          <form action="/dashboard" method="POST">
+            <input type="text" name="stock_name" id="stock_name">
+            <input type="submit" value="Search">
+          </form>
+        </a>
+      </div>
+      <div class="item"><a href="/stockmon"><i class="fas fa-desktop"></i>Stock Monitor</a></div>
+      <div class="item"><a href="/watchlist"><i class="fas fa-table"></i>Watchlist</a></div>
+      <div class="item"><a href="#"><i class="fas fa-th"></i>Feedback</a></div>
+      <div class="item">
+        <a class="sub-btn"><i class="fas fa-cogs"></i>Settings<i class="fas fa-angle-right dropdown"></i></a>
+        <div class="sub-menu">
+          <a href="#" class="sub-item">Sub Item 01</a>
+          <a href="#" class="sub-item">Sub Item 02</a>
+        </div>
+      </div>
+      <div class="item"><a href="#"><i class="fas fa-info-circle"></i>About Stock Monitor</a></div>
+      <div class="item"><a href="/"><i class="fas fa-user-alt-slash"></i>Logout</a></div>
+    </div>
+  </div>
 
-<table>
-    <tr>
-        <th>Date</th>
-        <th>AdjClose</th>
-        <th>Close</th>
-        <th>High</th>
-        <th>Low</th>
-        <th>Open</th>
-        <th>Volume</th>
-    </tr>
-    {% for sdata in sdatas %}
-    <tr>
-        <td>{{ sdata.Date }}</td>
-        <td>{{ sdata.AdjClose }}</td>
-        <td>{{ sdata.Close }}</td>
-        <td>{{ sdata.High }}</td>
-        <td>{{ sdata.Low }}</td>
-        <td>{{ sdata.Open }}</td>
-        <td>{{ sdata.Volume }}</td>
-    </tr>
-    {% endfor %}
-</table>
-{% endblock %}
+  <div class="container">
+    <p>Date and time: {{ date_time }}</p>
+  </div>
+  <section class="main">
+    <div class="container">
+      <h4>{{stock_display_nm}} Full Stock history</h4>
+      <!-- <table>
+          <tr>
+              <th>Date</th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+          </tr>
+          {% for sdata in sdatas %}
+          <tr>
+            <td></td>
+          </tr>
+          {% endfor %}
+      </table> -->
+      <div style="overflow-x: scroll; width:90%;">
+        <table>
+            <tr>
+              <th style = "padding-right:10px">Date</th>
+              {% for sdata in sdatas |reverse %}
+              <td style = "padding-right:7px">{{ sdata.Date }}</td>
+              {% endfor %}
+            </tr>
+            <tr>
+              <th style = "padding-right:10px">AdjClose</th>
+              {% for sdata in sdatas |reverse  %}
+              <td style = "padding-right:7px">${{ sdata.AdjClose }}</td>
+              {% endfor %}
+            </tr>
+            <tr>
+              <th style = "padding-right:10px"></th>
+              {% for sdata in sdatas |reverse  %}
+                {% if sdata.AdjClose - sdatas[359-loop.index].AdjClose >= 0 %}
+                
+                <td style = "color:green">${{ sdata.AdjClose - sdatas[359-loop.index].AdjClose }}</td>
+                {% endif %}
+                {% if sdata.AdjClose - sdatas[359-loop.index].AdjClose < 0 %}
+                
+                <td style = "color:red">${{ sdata.AdjClose - sdatas[359-loop.index].AdjClose }}</td>
+                {% endif %}
+              {% endfor %}
+            </tr>
+            <tr>
+              <th style = "padding-right:10px">Close</th>
+              {% for sdata in sdatas |reverse  %}
+              <td style = "padding-right:7px">${{ sdata.Close }}</td>
+              {% endfor %}
+            </tr>
+            <tr>
+              <th style = "padding-right:10px"></th>
+              {% for sdata in sdatas |reverse  %}
+                {% if sdata.Close - sdatas[359-loop.index].Close >= 0 %}
+                
+                <td style = "color:green">${{ sdata.Close - sdatas[359-loop.index].Close }}</td>
+                {% endif %}
+                {% if sdata.Close - sdatas[359-loop.index].Close < 0 %}
+                
+                <td style = "color:red">${{ sdata.Close - sdatas[359-loop.index].Close }}</td>
+                {% endif %}
+              {% endfor %}
+            </tr>
+            <tr>
+              <th style = "padding-right:10px">High</th>
+              {% for sdata in sdatas |reverse  %}
+              <td style = "padding-right:7px">${{ sdata.High }}</td>
+              {% endfor %}
+            </tr>
+            <tr>
+              <th style = "padding-right:10px"></th>
+              {% for sdata in sdatas |reverse  %}
+                {% if sdata.High - sdatas[359-loop.index].High >= 0 %}
+                
+                <td style = "color:green">${{ sdata.High - sdatas[359-loop.index].High }}</td>
+                {% endif %}
+                {% if sdata.High - sdatas[359-loop.index].High < 0 %}
+                
+                <td style = "color:red">${{ sdata.High - sdatas[359-loop.index].High }}</td>
+                {% endif %}
+              {% endfor %}
+            </tr>
+            <tr>
+              <th style = "padding-right:10px">Low</th>
+              {% for sdata in sdatas |reverse  %}
+              <td style = "padding-right:7px">${{ sdata.Low }}</td>
+              {% endfor %}
+            </tr>
+            <tr>
+              <th style = "padding-right:10px"></th>
+              {% for sdata in sdatas |reverse  %}
+                {% if sdata.Low - sdatas[359-loop.index].Low >= 0 %}
+                
+                <td style = "color:green">${{ sdata.Low - sdatas[359-loop.index].Low }}</td>
+                {% endif %}
+                {% if sdata.Low - sdatas[359-loop.index].Low < 0 %}
+                
+                <td style = "color:red">${{ sdata.Low - sdatas[359-loop.index].Low }}</td>
+                {% endif %}
+              {% endfor %}
+            </tr>
+            <tr>
+              <th style = "padding-right:10px">Open</th>
+              {% for sdata in sdatas |reverse  %}
+              <td style = "padding-right:7px">${{ sdata.Open }}</td>
+              {% endfor %}
+            </tr>
+            <tr>
+              <th style = "padding-right:10px"></th>
+              {% for sdata in sdatas |reverse  %}
+                {% if sdata.Open - sdatas[359-loop.index].Open >= 0 %}
+                  
+                <td style = "color:green">${{ sdata.Open - sdatas[359-loop.index].Open }}</td>
+                {% endif %}
+                {% if sdata.Open - sdatas[359-loop.index].Open < 0 %}
+                
+                <td style = "color:red">${{ sdata.Open - sdatas[359-loop.index].Open }}</td>
+                {% endif %}
+              {% endfor %}
+            </tr>
+            <tr>
+              <th style = "padding-right:10px">Volume</th>
+              {% for sdata in sdatas |reverse  %}
+              <td style = "padding-right:7px">{{ sdata.Volume }}</td>
+              {% endfor %}
+            </tr>
+            <tr>
+              <th style = "padding-right:10px"></th>
+              {% for sdata in sdatas |reverse  %}
+                {% if sdata.Volume - sdatas[359-loop.index].Volume >= 0 %}
+                
+                <td style = "color:green">{{ sdata.Volume - sdatas[359-loop.index].Volume }}</td>
+                {% endif %}
+                {% if sdata.Volume - sdatas[359-loop.index].Volume < 0 %}
+                
+                <td style = "color:red;padding-right:10px">{{ sdata.Volume - sdatas[359-loop.index].Volume }}</td>
+                {% endif %}
+              {% endfor %}
+            </tr>
+        </table>
+      </div>
+      
+    <br>
+    <th style = "padding-top:10px"><a href="javascript:history.back()" class="btn btn-primary">Go back</a></th>
+    </div>
+  </section>
+
+  <script type="text/javascript">
+    $(document).ready(function () {
+      //jquery for toggle sub menus
+      $('.sub-btn').click(function () {
+        $(this).next('.sub-menu').slideToggle();
+        $(this).find('.dropdown').toggleClass('rotate');
+      });
+
+      //jquery for expand and collapse the sidebar
+      $('.menu-btn').click(function () {
+        $('.side-bar').addClass('active');
+        $('.menu-btn').css("visibility", "hidden");
+      });
+
+      $('.close-btn').click(function () {
+        $('.side-bar').removeClass('active');
+        $('.menu-btn').css("visibility", "visible");
+      });
+    });
+  </script>
+
+</body>
+
+</html>

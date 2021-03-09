@@ -12,21 +12,37 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Stockinfo.db'
 db = SQLAlchemy(app)
 
+#download stock history to csv
+
+def expand_database():
+    with open('stock_names.csv') as csv_file:
+        data = csv.reader(csv_file, delimiter=',')
+        first_line = True
+        sdatas = []
+        for row in data:
+            if not first_line:
+                try:
+                    st.get_current_stock_history(str(row[0])+".AX")
+                except:
+                    pass
+            else:
+                first_line = False
+
+    print("Stock history updated")
+
 def download_stock():
-    st.get_current_stock_history("ANZ.AX")
-    st.get_current_stock_history("CBA.AX")
-    st.get_current_stock_history("360.AX")
-    st.get_current_stock_history("AMA.AX")
-    st.get_current_stock_history("ATS.AX")
-    st.get_current_stock_history("WMA.AX")
-    st.get_current_stock_history("WOW.AX")
-    st.get_current_stock_history("RIO.AX")
-    st.get_current_stock_history("OZL.AX")
-    st.get_current_stock_history("TPD.AX")
+    for filename in glob.glob("./stock_data/*.csv"):
+        stock_name = filename
+        stock_name=stock_name.replace('./stock_data/', '')
+        stock_name=stock_name.replace('.csv', '')
+        try:
+            st.get_current_stock_history(stock_name)
+        except:
+            pass
     print("Stock history updated")
 
 sched = BackgroundScheduler(daemon=True)
-sched.add_job(download_stock,'interval',minutes=15)
+sched.add_job(download_stock,'interval',minutes=60)
 sched.start()
 
 def round_larger_than(num):
@@ -96,7 +112,7 @@ def login():
     user = User.query.filter(
         User.username == request.form.get("login_user")).first()
     if user and user.password == request.form.get("login_password"):
-        return redirect("/dashboard")
+        return redirect("/stockmon")
     else:
         return render_template("login.html")
 
@@ -117,34 +133,33 @@ def register():
     else:
         return render_template('register.html')
 
-# @app.route('/data/<stock_name>', methods=['POST', 'GET'])
-# def data(stock_name):
-#     if request.method == 'GET':
-#         stock_display_nm = str(stock_name)
-#         st.search_stock(stock_name)
-#         now = datetime.now()
-#         date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
-
+@app.route('/dashboard/data/<stock_name>', methods=['POST', 'GET'])
+def data(stock_name):
+    if request.method == 'GET':
+        stock_display_nm = str(stock_name)
+        now = datetime.now()
+        date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
         
-#         with open('stock_data/'+stock_name+'.csv') as csv_file:
-#             data = csv.reader(csv_file, delimiter=',')
-#             first_line = True
-#             sdatas = []
-#             for row in data:
-#                 if not first_line:
-#                     sdatas.append({
-#                         "Date": row[0],
-#                         "AdjClose": round(float(row[1]), 2),
-#                         "Close": round(float(row[2]), 2),
-#                         "High": round(float(row[3]), 2),
-#                         "Low": round(float(row[4]), 2),
-#                         "Open": round(float(row[5]), 2),
-#                         "Volume": row[6]
-#                     })
-#                 else:
-#                     first_line = False
-#         return render_template("data.html", sdatas=sdatas, stock_display_nm=stock_display_nm, date_time=date_time)
-#     return render_template('data.html')
+        with open('stock_data/'+stock_display_nm+'.csv') as csv_file:
+            data = csv.reader(csv_file, delimiter=',')
+            first_line = True
+            sdatas = []
+            for row in data:
+                if not first_line:
+                    sdatas.append({
+                        "Date": row[0],
+                        "AdjClose": round_larger_than(float(row[1])),
+                        "Close": round_larger_than(float(row[2])),
+                        "High": round_larger_than(float(row[3])),
+                        "Low": round_larger_than(float(row[4])),
+                        "Open": round_larger_than(float(row[5])),
+                        "Volume": int(row[6])
+                    })
+                else:
+                    first_line = False
+
+        return render_template("data.html", sdatas=sdatas, stock_display_nm=stock_display_nm, date_time=date_time)
+    return render_template('data.html')
 
 
 @app.route('/dashboard', methods=['POST', 'GET'])
@@ -154,7 +169,11 @@ def dashboard():
         stock_display_nm = str(stock_nm)
         temp = st.get_current_price(stock_nm)
         #st.get_current_stock_history(stock_nm)
-        st_holders = st.stock_holders(stock_nm)
+        st_holders=[]
+        try:
+            st_holders = st.stock_holders(stock_nm)
+        except:
+            pass
         #st_recco = st.stock_recommendations(stock_nm)
         current_price = round_larger_than(temp)
         now = datetime.now()
@@ -181,9 +200,9 @@ def dashboard():
         vwap = round_larger_than(float(vwap))
         vwap_180 = round_larger_than(float(vwap_180))
         avg_volume, avg_volume_180 = average_volume(sdatas)
-        avg_volume = round_larger_than(float(avg_volume))
-        avg_volume_180 = round_larger_than(float(avg_volume_180))
-        return render_template("test.html",avg_volume = avg_volume, avg_volume_180=avg_volume_180,vwap_180=vwap_180 , vwap = vwap , st_holders=st_holders, sdatas=sdatas,current_price=current_price, stock_display_nm=stock_display_nm, date_time=date_time)
+        avg_volume = int(avg_volume)
+        avg_volume_180 = int(avg_volume_180)
+        return render_template("dashboard.html",avg_volume = avg_volume, avg_volume_180=avg_volume_180,vwap_180=vwap_180 , vwap = vwap , st_holders=st_holders, sdatas=sdatas,current_price=current_price, stock_display_nm=stock_display_nm, date_time=date_time)
     
     else:
         stock_nm = "CBA.AX"
@@ -218,17 +237,17 @@ def dashboard():
         vwap = round_larger_than(float(vwap))
         vwap_180 = round_larger_than(float(vwap_180))
         avg_volume, avg_volume_180 = average_volume(sdatas)
-        avg_volume = round_larger_than(float(avg_volume))
-        avg_volume_180 = round_larger_than(float(avg_volume_180))
-        return render_template("test.html",avg_volume = avg_volume, avg_volume_180=avg_volume_180, vwap_180 = vwap_180, vwap = vwap , st_holders=st_holders, sdatas=sdatas,current_price=current_price, stock_display_nm=stock_display_nm, date_time=date_time)
+        avg_volume = int(avg_volume)
+        avg_volume_180 = int(avg_volume_180)
+        return render_template("dashboard.html",avg_volume = avg_volume, avg_volume_180=avg_volume_180, vwap_180 = vwap_180, vwap = vwap , st_holders=st_holders, sdatas=sdatas,current_price=current_price, stock_display_nm=stock_display_nm, date_time=date_time)
 
-    return render_template('test.html')
+    return render_template('dashboard.html')
 
-@app.route('/watchlist', methods=['POST', 'GET'])
-def watchlist():
+@app.route('/stockmon', methods=['POST', 'GET'])
+def stockmon():
     now = datetime.now()
     date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
-    watchList = []
+    monitorList = []
     for filename in glob.glob("./stock_data/*.csv"):
         stock_nm = filename
         stock_nm=stock_nm.replace('./stock_data/', '')
@@ -236,22 +255,36 @@ def watchlist():
         with open(filename) as csv_file:
             data = csv.reader(csv_file)
             rows = list(data)
+            
             #compare close price from 1 year age to today
             #if close price increased than into watch list
-            element = {
-                "Name": stock_nm,
-                "Pct_change_1y": round_larger_than((float(rows[360][2])-float(rows[1][2]))/float(rows[1][2])),
-                "Pct_change_1m": round_larger_than((float(rows[360][2])-float(rows[330][2]))/float(rows[330][2])),
-                "Pct_change_1w": round_larger_than((float(rows[360][2])-float(rows[353][2]))/float(rows[353][2])),
-                "Year_close":round_larger_than(float(rows[1][2])),
-                "Month_close":round_larger_than(float(rows[330][2])),
-                "Week_close":round_larger_than(float(rows[353][2])),
-                "Close":round_larger_than(float(rows[360][2]))
-            }
-            if element['Pct_change_1y'] > 0 and element['Pct_change_1m'] > 0 and element['Pct_change_1w'] > 0:
-                watchList.append(element)
 
-    return render_template('watchlist.html', date_time=date_time, watchList=watchList)
+            #Above average volume 
+            #day high,open,close needs to be high
+            #day volume, low has to be high
+            #VWAP has to be higher
+            try:
+                element = {
+                    "Name": stock_nm,
+                    "Pct_change_1y": round_larger_than((float(rows[360][2])-float(rows[1][2]))/float(rows[1][2])),
+                    "Pct_change_1m": round_larger_than((float(rows[360][2])-float(rows[330][2]))/float(rows[330][2])),
+                    "Pct_change_1w": round_larger_than((float(rows[360][2])-float(rows[353][2]))/float(rows[353][2])),
+                    "Year_close":round_larger_than(float(rows[1][2])),
+                    "Month_close":round_larger_than(float(rows[330][2])),
+                    "Week_close":round_larger_than(float(rows[353][2])),
+                    "Close":round_larger_than(float(rows[360][2]))
+                }
+                if element['Pct_change_1y'] > 0 and element['Pct_change_1m'] > 0 and element['Pct_change_1w'] > 0:
+                    monitorList.append(element)
+            except:
+                pass
+
+    return render_template('stockmon.html', date_time=date_time, monitorList=monitorList)
+
+@app.route('/watchlist/<int:user_id>', methods=['POST', 'GET'])
+def watchlist():
+
+    return render_template('watchlist.html')
 
 if __name__ == "__main__":
     app.run(debug=True)
