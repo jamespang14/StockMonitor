@@ -12,8 +12,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Stockinfo.db'
 db = SQLAlchemy(app)
 
-#download stock history to csv
-
+#download all stock history on the stock market to csv
 def expand_database():
     with open('stock_names.csv') as csv_file:
         data = csv.reader(csv_file, delimiter=',')
@@ -30,6 +29,7 @@ def expand_database():
 
     print("Stock history updated")
 
+#update all stock datas in the folder
 def download_stock():
     for filename in glob.glob("./stock_data/*.csv"):
         stock_name = filename
@@ -41,10 +41,12 @@ def download_stock():
             pass
     print("Stock history updated")
 
+#Scheduler update current stocks every x minute
 sched = BackgroundScheduler(daemon=True)
 sched.add_job(download_stock,'interval',minutes=60)
 sched.start()
 
+#rounding function
 def round_larger_than(num):
     if num > 0.1:
         num = round(num, 2)
@@ -53,6 +55,7 @@ def round_larger_than(num):
         num = round(num, 5)
     return num
 
+#Calculate VWAP
 def typicalPrice(high, low, close, volume):
     typical_price = (high+low+close)/3.0
     typical_price_by_period_volume = typical_price*volume
