@@ -8,6 +8,7 @@ cycler==0.10.0
 Flask==1.1.2
 Flask-SQLAlchemy==2.4.4
 funcsigs==1.0.2
+futures==3.3.0
 gunicorn==19.10.0
 html5lib==1.1
 idna==2.10
