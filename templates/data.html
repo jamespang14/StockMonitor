@@ -102,7 +102,7 @@
               <td style = "padding-right:7px">${{ sdata.AdjClose }}</td>
               {% endfor %}
             </tr>
-            <tr>
+            <!-- <tr>
               <th style = "padding-right:10px"></th>
               {% for sdata in sdatas |reverse  %}
                 {% if sdata.AdjClose - sdatas[359-loop.index].AdjClose >= 0 %}
@@ -114,7 +114,7 @@
                 <td style = "color:red">${{ sdata.AdjClose - sdatas[359-loop.index].AdjClose }}</td>
                 {% endif %}
               {% endfor %}
-            </tr>
+            </tr> -->
             <tr>
               <th style = "padding-right:10px">Close</th>
               {% for sdata in sdatas |reverse  %}

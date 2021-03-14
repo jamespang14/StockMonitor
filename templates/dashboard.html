@@ -81,14 +81,14 @@
             {% endif %}
             {% endfor %}
           </tr>
-          <tr>
+          <!-- <tr>
             <th style = "padding-right:10px">AdjClose</th>
             {% for sdata in sdatas  |reverse %}
             {% if loop.index <= 5 %}
             <td style = "padding-right:7px">${{ sdata.AdjClose }}</td>
             {% endif %}
             {% endfor %}
-          </tr>
+          </tr> -->
           <tr>
             <th style = "padding-right:10px"></th>
             {% for sdata in sdatas  |reverse %}
@@ -316,10 +316,12 @@
 </body>
 
 </html>
-<!-- 
+<!--
 data order: open, close, high, low, volume
 date format change dd-mm-yyyy 
 308,713 all volumes field
 two decimal
-
+intraday trades
+top 20 share holders
+12m plot graph
 -->

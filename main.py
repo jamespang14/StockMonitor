@@ -266,16 +266,21 @@ def stockmon():
             #day high,open,close needs to be high
             #day volume, low has to be high
             #VWAP has to be higher
+
             try:
                 element = {
                     "Name": stock_nm,
-                    "Pct_change_1y": round_larger_than((float(rows[360][2])-float(rows[1][2]))/float(rows[1][2])),
-                    "Pct_change_1m": round_larger_than((float(rows[360][2])-float(rows[330][2]))/float(rows[330][2])),
-                    "Pct_change_1w": round_larger_than((float(rows[360][2])-float(rows[353][2]))/float(rows[353][2])),
-                    "Year_close":round_larger_than(float(rows[1][2])),
-                    "Month_close":round_larger_than(float(rows[330][2])),
-                    "Week_close":round_larger_than(float(rows[353][2])),
-                    "Close":round_larger_than(float(rows[360][2]))
+                    "Pct_change_high": round_larger_than((float(rows[360][2])-float(rows[1][2]))/float(rows[1][2])),
+                    "Pct_change_open": round_larger_than((float(rows[360][2])-float(rows[330][2]))/float(rows[330][2])),
+                    "Pct_change_low": round_larger_than((float(rows[360][2])-float(rows[353][2]))/float(rows[353][2])),
+                    "Pct_change_open": round_larger_than((float(rows[360][2])-float(rows[353][2]))/float(rows[353][2])),
+                    "Pct_change_volume": round_larger_than((float(rows[360][2])-float(rows[353][2]))/float(rows[353][2])),
+                    "High":round_larger_than(float(rows[1][2])),
+                    "Open":round_larger_than(float(rows[330][2])),
+                    "Close":round_larger_than(float(rows[353][2])),
+                    "Low":round_larger_than(float(rows[360][2])),
+                    "Volume":int(rows[360][2]),
+                    "VWAP": round_larger_than((float(rows[360][2])-float(rows[353][2]))/float(rows[353][2])),
                 }
                 if element['Pct_change_1y'] > 0 and element['Pct_change_1m'] > 0 and element['Pct_change_1w'] > 0:
                     monitorList.append(element)
