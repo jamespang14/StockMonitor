@@ -2,9 +2,9 @@ import yfinance as yf
 import pandas as pd
 #from alpha_vantage.timeseries import TimeSeries
 from datetime import datetime
-import matplotlib  
-matplotlib.use('TkAgg') 
-import matplotlib.pyplot as plt
+# import matplotlib  
+# matplotlib.use('TkAgg') 
+# import matplotlib.pyplot as plt
 #plt.style.use('seaborn')
 
 api_key = '00KXYJUV0DWBZY95'#alpha vantage api key
