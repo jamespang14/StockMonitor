@@ -43,7 +43,7 @@ def download_stock():
 
 #Scheduler update current stocks every x minute
 sched = BackgroundScheduler(daemon=True)
-sched.add_job(download_stock,'interval',minutes=60)
+sched.add_job(download_stock,'interval',minutes=1440)
 sched.start()
 
 #rounding function
