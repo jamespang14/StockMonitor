@@ -96,8 +96,8 @@
               <td style = "color:green">${{ '%0.2f' % stock.change_high|float}}</td>
               <td>${{ '%0.2f' % stock.Low|float}}</td>
               <td style = "color:green">${{ '%0.2f' % stock.change_low|float}}</td>
-              <td>${{add_comma(stock.Volume)}}</td>
-              <td>${{add_comma(stock.change_volume)}}</td>
+              <td>{{add_comma(stock.Volume)}}</td>
+              <td>{{add_comma(stock.change_volume)}}</td>
               <td> 
                   <form action="/dashboard" method="POST">
                       <input type="text" value="{{stock.Name}}.AX" name="stock_name" id="stock_name" size="4">
