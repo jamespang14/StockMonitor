@@ -63,33 +63,41 @@
 
   <div class="container">
     <H5>Stock Monitor</H5>
-    <h6>Current criteria: Close price of stock increased throughout the year</h6>
+    <h6>Current criteria: Increase in all data fields comparing to yesterday</h6>
   </div>
   <div style="overflow-y: scroll; height: 650px">
     <div class="container">
       <table>
           <tr>
-              <th style = "padding-right:7px"> Stock code </th>
-              <th style = "padding-right:7px"> 1y Performance </th>
-              <th style = "padding-right:7px"> 1m Performance </th>
-              <th style = "padding-right:7px"> 1w Performance </th>
-              <th style = "padding-right:7px"> 1y close</th>
-              <th style = "padding-right:7px"> 1m close</th>
-              <th style = "padding-right:7px"> 1w close</th>
-              <th style = "padding-right:7px">Current close</th>
+              <th> Stock code </th>
+              
+              <th> Open</th>
               <th> </th>
+              <th> Close</th>
+              <th> </th>
+              <th> High</th>
+              <th> </th>
+              <th> Low</th>
+              <th> </th>
+              <th> Volume</th>
+              <th> </th>
+              <th></th>
   
           </tr>
           {% for stock in monitorList %}
           <tr>
               <td style = "padding-right:7px">{{stock.Name}}</td>
-              <td style = "padding-right:7px">{{stock.Pct_change_1y}}%</td>
-              <td style = "padding-right:7px">{{stock.Pct_change_1m}}%</td>
-              <td style = "padding-right:7px">{{stock.Pct_change_1w}}%</td>
-              <td style = "padding-right:7px">{{stock.Year_close}}</td>
-              <td style = "padding-right:7px">{{stock.Month_close}}</td>
-              <td style = "padding-right:7px">{{stock.Week_close}}</td>
-              <td style = "padding-right:7px">{{stock.Close}}</td>
+
+              <td>${{ '%0.2f' % stock.Open|float}}</td>
+              <td style = "color:green">${{ '%0.2f' % stock.change_open|float}}</td>
+              <td>${{ '%0.2f' % stock.Close|float}}</td>
+              <td style = "color:green">${{ '%0.2f' % stock.change_close|float}}</td>
+              <td>${{ '%0.2f' % stock.High|float}}</td>
+              <td style = "color:green">${{ '%0.2f' % stock.change_high|float}}</td>
+              <td>${{ '%0.2f' % stock.Low|float}}</td>
+              <td style = "color:green">${{ '%0.2f' % stock.change_low|float}}</td>
+              <td>${{add_comma(stock.Volume)}}</td>
+              <td>${{add_comma(stock.change_volume)}}</td>
               <td> 
                   <form action="/dashboard" method="POST">
                       <input type="text" value="{{stock.Name}}.AX" name="stock_name" id="stock_name" size="4">

@@ -5,8 +5,12 @@ from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from apscheduler.schedulers.background import BackgroundScheduler
 import glob
+import json
 import pandas as pd
 import stock as st
+import plotly
+import plotly.graph_objects as go
+import yfinance as yf
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Stockinfo.db'
@@ -46,14 +50,26 @@ sched = BackgroundScheduler(daemon=True)
 sched.add_job(download_stock,'interval',minutes=1440)
 sched.start()
 
-#rounding function
-def round_larger_than(num):
-    if num > 0.1:
-        num = round(num, 2)
-        return num
-    if num <= 0.1:
-        num = round(num, 5)
-    return num
+#Function to plot stock data into diagram
+def plot_graph(stock):
+    ticker = yf.Ticker(stock)
+    hist = ticker.history(period='360d')
+    hist.head()
+
+    hist=hist.reset_index()
+    for i in ['Open', 'High', 'Close', 'Low']: 
+        hist[i]  =  hist[i].astype('float64')
+
+    fig = go.Figure(data=go.Ohlc(
+        x = hist['Date'],
+        open = hist['Open'],
+        close = hist['Close'],
+        high = hist['High'],
+        low = hist['Low']
+    ))
+    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+
+    return graphJSON
 
 #Calculate VWAP
 def typicalPrice(high, low, close, volume):
@@ -97,7 +113,11 @@ def average_volume(sdatas):
     volume_180 = volume_180/180
 
     return volume, volume_180
-        
+
+def add_comma(value):
+    temp = '{:,}'.format(value)
+    return temp
+
 class User(db.Model):
     __tablename__ = 'user'
     user_id = db.Column(db.Integer, primary_key=True)
@@ -141,7 +161,7 @@ def data(stock_name):
     if request.method == 'GET':
         stock_display_nm = str(stock_name)
         now = datetime.now()
-        date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
+        date_time = now.strftime("%d/%m/%Y, %H:%M:%S")
         
         with open('stock_data/'+stock_display_nm+'.csv') as csv_file:
             data = csv.reader(csv_file, delimiter=',')
@@ -151,17 +171,17 @@ def data(stock_name):
                 if not first_line:
                     sdatas.append({
                         "Date": row[0],
-                        "AdjClose": round_larger_than(float(row[1])),
-                        "Close": round_larger_than(float(row[2])),
-                        "High": round_larger_than(float(row[3])),
-                        "Low": round_larger_than(float(row[4])),
-                        "Open": round_larger_than(float(row[5])),
+                        "AdjClose": float(row[1]),
+                        "Close": float(row[2]),
+                        "High": float(row[3]),
+                        "Low": float(row[4]),
+                        "Open": float(row[5]),
                         "Volume": int(row[6])
                     })
                 else:
                     first_line = False
 
-        return render_template("data.html", sdatas=sdatas, stock_display_nm=stock_display_nm, date_time=date_time)
+        return render_template("data.html", add_comma=add_comma, sdatas=sdatas, stock_display_nm=stock_display_nm, date_time=date_time)
     return render_template('data.html')
 
 
@@ -178,9 +198,10 @@ def dashboard():
         except:
             pass
         #st_recco = st.stock_recommendations(stock_nm)
-        current_price = round_larger_than(temp)
+        current_price = temp
         now = datetime.now()
-        date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
+        date_time = now.strftime("%d/%m/%Y, %H:%M:%S")
+        plot = plot_graph(stock_display_nm)
 
         with open('stock_data/'+stock_nm+'.csv') as csv_file:
             data = csv.reader(csv_file, delimiter=',')
@@ -190,66 +211,29 @@ def dashboard():
                 if not first_line:
                     sdatas.append({
                         "Date": row[0],
-                        "AdjClose": round_larger_than(float(row[1])),
-                        "Close": round_larger_than(float(row[2])),
-                        "High": round_larger_than(float(row[3])),
-                        "Low": round_larger_than(float(row[4])),
-                        "Open": round_larger_than(float(row[5])),
+                        "AdjClose": float(row[1]),
+                        "Close": float(row[2]),
+                        "High": float(row[3]),
+                        "Low": float(row[4]),
+                        "Open": float(row[5]),
                         "Volume": int(row[6])
                     })
                 else:
                     first_line = False
         vwap,vwap_180 = VWAP(sdatas)
-        vwap = round_larger_than(float(vwap))
-        vwap_180 = round_larger_than(float(vwap_180))
+        vwap = float(vwap)
+        vwap_180 = float(vwap_180)
         avg_volume, avg_volume_180 = average_volume(sdatas)
         avg_volume = int(avg_volume)
         avg_volume_180 = int(avg_volume_180)
-        return render_template("dashboard.html",avg_volume = avg_volume, avg_volume_180=avg_volume_180,vwap_180=vwap_180 , vwap = vwap , st_holders=st_holders, sdatas=sdatas,current_price=current_price, stock_display_nm=stock_display_nm, date_time=date_time)
-    
-    else:
-        stock_nm = "CBA.AX"
-        stock_display_nm = str(stock_nm)
-        temp = st.get_current_price(stock_nm)
-        #st.get_current_stock_history(stock_nm)
-        st_holders = st.stock_holders(stock_nm)
-        #st_recco = st.stock_recommendations(stock_nm)
-        current_price = round_larger_than(temp)
-        now = datetime.now()
-        date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
-
-        with open('stock_data/'+stock_nm+'.csv') as csv_file:
-            data = csv.reader(csv_file, delimiter=',')
-            first_line = True
-            sdatas = []
-            for row in data:
-                if not first_line:
-                    sdatas.append({
-                        "Date": row[0],
-                        "AdjClose": round_larger_than(float(row[1])),
-                        "Close": round_larger_than(float(row[2])),
-                        "High": round_larger_than(float(row[3])),
-                        "Low": round_larger_than(float(row[4])),
-                        "Open": round_larger_than(float(row[5])),
-                        "Volume": int(row[6])
-                    })
-                else:
-                    first_line = False
-
-        vwap,vwap_180 = VWAP(sdatas)
-        vwap = round_larger_than(float(vwap))
-        vwap_180 = round_larger_than(float(vwap_180))
-        avg_volume, avg_volume_180 = average_volume(sdatas)
-        avg_volume = int(avg_volume)
-        avg_volume_180 = int(avg_volume_180)
-        return render_template("dashboard.html",avg_volume = avg_volume, avg_volume_180=avg_volume_180, vwap_180 = vwap_180, vwap = vwap , st_holders=st_holders, sdatas=sdatas,current_price=current_price, stock_display_nm=stock_display_nm, date_time=date_time)
+        return render_template("dashboard.html",plot=plot ,add_comma=add_comma, avg_volume = avg_volume, avg_volume_180=avg_volume_180,vwap_180=vwap_180 , vwap = vwap , st_holders=st_holders, sdatas=sdatas,current_price=current_price, stock_display_nm=stock_display_nm, date_time=date_time)
 
     return render_template('dashboard.html')
 
 @app.route('/stockmon', methods=['POST', 'GET'])
 def stockmon():
     now = datetime.now()
-    date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
+    date_time = now.strftime("%d/%m/%Y, %H:%M:%S")
     monitorList = []
     for filename in glob.glob("./stock_data/*.csv"):
         stock_nm = filename
@@ -270,24 +254,23 @@ def stockmon():
             try:
                 element = {
                     "Name": stock_nm,
-                    "Pct_change_high": round_larger_than((float(rows[360][2])-float(rows[1][2]))/float(rows[1][2])),
-                    "Pct_change_open": round_larger_than((float(rows[360][2])-float(rows[330][2]))/float(rows[330][2])),
-                    "Pct_change_low": round_larger_than((float(rows[360][2])-float(rows[353][2]))/float(rows[353][2])),
-                    "Pct_change_open": round_larger_than((float(rows[360][2])-float(rows[353][2]))/float(rows[353][2])),
-                    "Pct_change_volume": round_larger_than((float(rows[360][2])-float(rows[353][2]))/float(rows[353][2])),
-                    "High":round_larger_than(float(rows[1][2])),
-                    "Open":round_larger_than(float(rows[330][2])),
-                    "Close":round_larger_than(float(rows[353][2])),
-                    "Low":round_larger_than(float(rows[360][2])),
-                    "Volume":int(rows[360][2]),
-                    "VWAP": round_larger_than((float(rows[360][2])-float(rows[353][2]))/float(rows[353][2])),
+                    "change_high": float(rows[360][3])-float(rows[359][3]),
+                    "change_open": float(rows[360][5])-float(rows[359][5]),
+                    "change_low": float(rows[360][4])-float(rows[359][4]),
+                    "change_close": float(rows[360][2])-float(rows[359][2]),
+                    "change_volume": int(rows[360][6])-int(rows[359][6]),
+                    "High":float(rows[360][3]),
+                    "Open":float(rows[360][5]),
+                    "Close":float(rows[360][2]),
+                    "Low":float(rows[360][4]),
+                    "Volume":int(rows[360][6])
                 }
-                if element['Pct_change_1y'] > 0 and element['Pct_change_1m'] > 0 and element['Pct_change_1w'] > 0:
+                if element['change_high'] > 0 and element['change_open'] > 0 and element['change_low'] > 0 and element['change_close'] > 0 and element['change_volume'] > 0:
                     monitorList.append(element)
             except:
                 pass
 
-    return render_template('stockmon.html', date_time=date_time, monitorList=monitorList)
+    return render_template('stockmon.html', add_comma=add_comma, date_time=date_time, monitorList=monitorList)
 
 @app.route('/watchlist/<int:user_id>', methods=['POST', 'GET'])
 def watchlist():
