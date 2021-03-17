@@ -16,6 +16,28 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Stockinfo.db'
 db = SQLAlchemy(app)
 
+class User(db.Model):
+    __tablename__ = 'user'
+    user_id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(200), nullable=False)
+    password = db.Column(db.String(200), nullable=False)
+    date_created = db.Column(db.DateTime, default=datetime.now)
+    date_updated = db.Column(db.DateTime, default=datetime.now)
+
+    def __repr__(self):
+        return '<Task %r>' % self.user_id
+
+class Watchlist(db.Model):
+    __tablename__ = 'watchlist'
+    list_id = db.Column(db.Integer, primary_key=True)
+    used_id = db.Column(db.Integer, nullable=False)
+    username = db.Column(db.String(200), nullable=False)
+    stock_code = db.Column(db.String(200), nullable=False)
+    date_added = db.Column(db.DateTime, default=datetime.now)
+
+    def __repr__(self):
+        return '<Task %r>' % self.list_id
+
 #download all stock history on the stock market to csv
 def expand_database():
     with open('stock_names.csv') as csv_file:
@@ -118,23 +140,13 @@ def add_comma(value):
     temp = '{:,}'.format(value)
     return temp
 
-class User(db.Model):
-    __tablename__ = 'user'
-    user_id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(200), nullable=False)
-    password = db.Column(db.String(200), nullable=False)
-    date_created = db.Column(db.DateTime, default=datetime.now)
-    date_updated = db.Column(db.DateTime, default=datetime.now)
-
-    def __repr__(self):
-        return '<Task %r>' % self.user_id
-
 
 @app.route('/', methods=['POST', 'GET'])
 def login():
     user = User.query.filter(
         User.username == request.form.get("login_user")).first()
     if user and user.password == request.form.get("login_password"):
+        session["user"] = user.username
         return redirect("/stockmon")
     else:
         return render_template("login.html")
@@ -272,10 +284,19 @@ def stockmon():
 
     return render_template('stockmon.html', add_comma=add_comma, date_time=date_time, monitorList=monitorList)
 
-@app.route('/watchlist/<int:user_id>', methods=['POST', 'GET'])
-def watchlist():
+@app.route('/watchlist/<username>', methods=['POST', 'GET'])
+def watchlist(username):
+
+    return render_template('watchlist.html')
+
+
+@app.route('/watchlist/add/<username>', methods=['POST', 'GET'])
+def add_list(username):
 
     return render_template('watchlist.html')
 
 if __name__ == "__main__":
     app.run(debug=True)
+    
+#stockmon:
+#volume * closed
