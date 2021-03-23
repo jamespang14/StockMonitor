@@ -62,7 +62,7 @@
         </div>
       </div>
       <div class="item"><a href="#"><i class="fas fa-info-circle"></i>About Stock Monitor</a></div>
-      <div class="item"><a href="/"><i class="fas fa-user-alt-slash"></i>Logout</a></div>
+      <div class="item"><a href="/logout"><i class="fas fa-user-alt-slash"></i>Logout</a></div>
     </div>
   </div>
 
@@ -245,7 +245,7 @@
           </tr>
           <tr>
             <th style = "padding-right:10px">News</th>
-            <td style = "padding-right:7px"><a href="https://www.google.com/news?q={{ stock_display_nm }}" target="_blank">Link</a></td>
+            <td style = "padding-right:7px"><a href="https://www2.asx.com.au/markets/trade-our-cash-market/announcements.{{stock_display_nm}}" target="_blank">Link</a></td>
           </tr>
       </table>
       <br>
@@ -257,7 +257,9 @@
           <div class="card-body">
             <h2 class="card-title">{{ stock_display_nm }}</h2>
             <h4 class="card-text">Current Price: ${{ '%0.2f' % current_price|float }}</h4>
-            <a href="#" class="btn btn-primary">Add Watchlist</a>
+            <h4>Sector: </h4>
+            <h4>{{ sector_info }}</h4>
+            <a href="/addwatchlist/{{stock_display_nm}}.AX" class="btn btn-primary">Add Watchlist</a>
             <!-- <a href="#" class="btn btn-primary">See CF & BS</a>  -->
             <a href="#" class="btn btn-primary">Analysis</a>     
           </div>
@@ -284,30 +286,6 @@
       Pct change: {{ '%0.2f' % pct_chg|float }}%
       <br><br>
     </div>
-  
-    <div class = "container">
-      <h5>Stock Holders: </h5>
-      <table>
-        <tr>
-          <td>% of Shares Held by All Insider</td>
-          <td>{{ st_holders[0] }}</td>
-        </tr>
-        <tr>
-          
-          <td>% of Shares Held by Institutions</td>
-          <td>{{ st_holders[1] }}</td>
-        </tr>
-        <tr>
-          <td>% of Float Held by Institutions</td>
-          <td>{{ st_holders[2] }}</td>
-        </tr>
-        <tr>
-          <td style = "padding-right:5px">Number of Institutions Holding Shares</td>
-          <td>{{ st_holders[3] }}</td>
-        </tr>
-      </table>
-    </div>
-  </div>
   
  
   <script type="text/javascript">

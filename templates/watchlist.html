@@ -53,7 +53,7 @@
         </div>
       </div>
       <div class="item"><a href="#"><i class="fas fa-info-circle"></i>About Stock Monitor</a></div>
-      <div class="item"><a href="/"><i class="fas fa-user-alt-slash"></i>Logout</a></div>
+      <div class="item"><a href="/logout"><i class="fas fa-user-alt-slash"></i>Logout</a></div>
     </div>
   </div>
 
@@ -61,7 +61,28 @@
     <p>Date and time: {{ date_time }}</p>
   </div>
 
-  
+  <div class="container">
+    <H5>Watchlist</H5>
+  </div>
+  <div style="overflow-y: scroll; height: 650px">
+    <div class="container">
+      <table>
+          <tr>
+              <th> Stock code </th>
+            <th>Date added</th>
+              <th> </th>
+          </tr>
+          {% for stock in userlist %}
+          <tr>
+              <td>{{stock.Name}}</td>
+              <td>{{stock.Date_added}}</td>
+              <td><a href="/remove">remove</a></td>
+          </tr>
+          {% endfor %}
+          
+      </table>
+    </div>
+  </div>
  
   <script type="text/javascript">
     $(document).ready(function () {

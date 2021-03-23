@@ -3,7 +3,6 @@ from flask import Flask, render_template, Config, url_for, request, redirect, se
 import csv
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
-from apscheduler.schedulers.background import BackgroundScheduler
 import glob
 import json
 import pandas as pd
@@ -13,7 +12,9 @@ import plotly.graph_objects as go
 import yfinance as yf
 
 app = Flask(__name__)
+app.secret_key = "StockMonita"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Stockinfo.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 class User(db.Model):
@@ -30,7 +31,6 @@ class User(db.Model):
 class Watchlist(db.Model):
     __tablename__ = 'watchlist'
     list_id = db.Column(db.Integer, primary_key=True)
-    used_id = db.Column(db.Integer, nullable=False)
     username = db.Column(db.String(200), nullable=False)
     stock_code = db.Column(db.String(200), nullable=False)
     date_added = db.Column(db.DateTime, default=datetime.now)
@@ -38,26 +38,27 @@ class Watchlist(db.Model):
     def __repr__(self):
         return '<Task %r>' % self.list_id
 
-#download all stock history on the stock market to csv
-def expand_database():
-    with open('stock_names.csv') as csv_file:
-        data = csv.reader(csv_file, delimiter=',')
-        first_line = True
-        sdatas = []
-        for row in data:
-            if not first_line:
-                try:
-                    st.get_current_stock_history(str(row[0])+".AX")
-                except:
-                    pass
-            else:
-                first_line = False
+# #download all stock history on the stock market to csv
+# def expand_database():
+#     with open('stock_names.csv') as csv_file:
+#         data = csv.reader(csv_file, delimiter=',')
+#         first_line = True
+#         sdatas = []
+#         for row in data:
+#             if not first_line:
+#                 try:
+#                     st.get_current_stock_history(str(row[0])+".AX")
+#                 except:
+#                     pass
+#             else:
+#                 first_line = False
 
-    print("Stock history updated")
+#     print("Stock history updated")
 
-#update all stock datas in the folder
-def download_stock():
+def manual_update():
+    ind = 1
     for filename in glob.glob("./stock_data/*.csv"):
+        print("Stock no: "+ind)
         stock_name = filename
         stock_name=stock_name.replace('./stock_data/', '')
         stock_name=stock_name.replace('.csv', '')
@@ -65,12 +66,8 @@ def download_stock():
             st.get_current_stock_history(stock_name)
         except:
             pass
+        ind = ind +1
     print("Stock history updated")
-
-#Scheduler update current stocks every x minute
-sched = BackgroundScheduler(daemon=True)
-sched.add_job(download_stock,'interval',minutes=1440)
-sched.start()
 
 #Function to plot stock data into diagram
 def plot_graph(stock):
@@ -120,6 +117,7 @@ def VWAP(sdatas):
 
     return vwap, vwap_180
 
+# function to calculate average volume
 def average_volume(sdatas):
     volume = 0.0
     volume_180 = 0.0
@@ -136,11 +134,12 @@ def average_volume(sdatas):
 
     return volume, volume_180
 
+#function to format large volume numbers
 def add_comma(value):
     temp = '{:,}'.format(value)
     return temp
 
-
+#login route for the user
 @app.route('/', methods=['POST', 'GET'])
 def login():
     user = User.query.filter(
@@ -151,7 +150,7 @@ def login():
     else:
         return render_template("login.html")
 
-
+#sign up route for users
 @app.route('/register', methods=['POST', 'GET'])
 def register():
     if request.method == 'POST':
@@ -168,6 +167,8 @@ def register():
     else:
         return render_template('register.html')
 
+#dashboard full data route
+#data contain full history of stocks
 @app.route('/dashboard/data/<stock_name>', methods=['POST', 'GET'])
 def data(stock_name):
     if request.method == 'GET':
@@ -196,24 +197,26 @@ def data(stock_name):
         return render_template("data.html", add_comma=add_comma, sdatas=sdatas, stock_display_nm=stock_display_nm, date_time=date_time)
     return render_template('data.html')
 
-
+#dashboard route
+#will contain current price, 5d stock shortlist, plot, calculations
 @app.route('/dashboard', methods=['POST', 'GET'])
 def dashboard():
     if request.method == 'POST':
         stock_nm = request.form['stock_name']
+
         stock_display_nm = str(stock_nm)
-        temp = st.get_current_price(stock_nm)
-        #st.get_current_stock_history(stock_nm)
-        st_holders=[]
+        stock_display_nm = stock_nm.replace('.AX', '')
+        current_price = st.get_current_price(stock_nm)
+        sector_info=''
         try:
-            st_holders = st.stock_holders(stock_nm)
+            sector_info = str(st.get_sector_info(stock_nm))
         except:
             pass
+        #st.get_current_stock_history(stock_nm)
         #st_recco = st.stock_recommendations(stock_nm)
-        current_price = temp
         now = datetime.now()
         date_time = now.strftime("%d/%m/%Y, %H:%M:%S")
-        plot = plot_graph(stock_display_nm)
+        plot = plot_graph(stock_nm)
 
         with open('stock_data/'+stock_nm+'.csv') as csv_file:
             data = csv.reader(csv_file, delimiter=',')
@@ -238,10 +241,12 @@ def dashboard():
         avg_volume, avg_volume_180 = average_volume(sdatas)
         avg_volume = int(avg_volume)
         avg_volume_180 = int(avg_volume_180)
-        return render_template("dashboard.html",plot=plot ,add_comma=add_comma, avg_volume = avg_volume, avg_volume_180=avg_volume_180,vwap_180=vwap_180 , vwap = vwap , st_holders=st_holders, sdatas=sdatas,current_price=current_price, stock_display_nm=stock_display_nm, date_time=date_time)
+        return render_template("dashboard.html",sector_info=sector_info,plot=plot ,add_comma=add_comma, avg_volume = avg_volume, avg_volume_180=avg_volume_180,vwap_180=vwap_180 , vwap = vwap , sdatas=sdatas,current_price=current_price, stock_display_nm=stock_display_nm, date_time=date_time)
 
-    return render_template('dashboard.html')
+    return redirect('/stockmon')
 
+#route to filter out stocks that fits the criteria
+#main route / homepage after logging in
 @app.route('/stockmon', methods=['POST', 'GET'])
 def stockmon():
     now = datetime.now()
@@ -266,6 +271,7 @@ def stockmon():
             try:
                 element = {
                     "Name": stock_nm,
+                    #"Sector":str(st.get_sector_info(filename)),
                     "change_high": float(rows[360][3])-float(rows[359][3]),
                     "change_open": float(rows[360][5])-float(rows[359][5]),
                     "change_low": float(rows[360][4])-float(rows[359][4]),
@@ -275,7 +281,8 @@ def stockmon():
                     "Open":float(rows[360][5]),
                     "Close":float(rows[360][2]),
                     "Low":float(rows[360][4]),
-                    "Volume":int(rows[360][6])
+                    "Volume":int(rows[360][6]),
+                    "CV":float(rows[360][2])*int(rows[360][6])
                 }
                 if element['change_high'] > 0 and element['change_open'] > 0 and element['change_low'] > 0 and element['change_close'] > 0 and element['change_volume'] > 0:
                     monitorList.append(element)
@@ -284,19 +291,48 @@ def stockmon():
 
     return render_template('stockmon.html', add_comma=add_comma, date_time=date_time, monitorList=monitorList)
 
-@app.route('/watchlist/<username>', methods=['POST', 'GET'])
-def watchlist(username):
+@app.route('/watchlist/', methods=['POST', 'GET'])
+def watchlist():
+    stocks = Watchlist.query.filter(Watchlist.username == session.get("user")).all()
+    userlist = []
+    now = datetime.now()
+    date_time = now.strftime("%d/%m/%Y, %H:%M:%S")
+    for stock in stocks:
+        element = {
+            "Name":stock.stock_code,
+            "Date_added":stock.date_added
+        }
+        userlist.append(element)
+    return render_template('watchlist.html',date_time=date_time,userlist=userlist)
 
-    return render_template('watchlist.html')
 
+@app.route('/addwatchlist/<stock_cd>', methods=['POST', 'GET'])
+def add_list(stock_cd):
+    stock_nm = stock_cd
+    user = session["user"]
+    new_list_entry = Watchlist(username=user, stock_code=stock_nm)
 
-@app.route('/watchlist/add/<username>', methods=['POST', 'GET'])
-def add_list(username):
+    try:
+        db.session.add(new_list_entry)
+        db.session.commit()
 
-    return render_template('watchlist.html')
+        return redirect(request.referrer)
+    except:
+        return 'There was an issue'
+
+    # return redirect(request.referrer)
+
+@app.route('/remove')
+def remove():
+    return redirect(request.referrer)
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect('/')
 
 if __name__ == "__main__":
     app.run(debug=True)
-    
+
 #stockmon:
 #volume * closed

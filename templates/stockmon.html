@@ -53,7 +53,7 @@
         </div>
       </div>
       <div class="item"><a href="#"><i class="fas fa-info-circle"></i>About Stock Monitor</a></div>
-      <div class="item"><a href="/"><i class="fas fa-user-alt-slash"></i>Logout</a></div>
+      <div class="item"><a href="/logout"><i class="fas fa-user-alt-slash"></i>Logout</a></div>
     </div>
   </div>
 
@@ -70,7 +70,8 @@
       <table>
           <tr>
               <th> Stock code </th>
-              
+              <th>Watchlist</th>
+              <th>  </th>
               <th> Open</th>
               <th> </th>
               <th> Close</th>
@@ -81,29 +82,34 @@
               <th> </th>
               <th> Volume</th>
               <th> </th>
-              <th></th>
+              <th>Close * Volume</th>
+              <th>Announcements</th>
   
           </tr>
           {% for stock in monitorList %}
           <tr>
               <td style = "padding-right:7px">{{stock.Name}}</td>
-
-              <td>${{ '%0.2f' % stock.Open|float}}</td>
-              <td style = "color:green">${{ '%0.2f' % stock.change_open|float}}</td>
-              <td>${{ '%0.2f' % stock.Close|float}}</td>
-              <td style = "color:green">${{ '%0.2f' % stock.change_close|float}}</td>
-              <td>${{ '%0.2f' % stock.High|float}}</td>
-              <td style = "color:green">${{ '%0.2f' % stock.change_high|float}}</td>
-              <td>${{ '%0.2f' % stock.Low|float}}</td>
-              <td style = "color:green">${{ '%0.2f' % stock.change_low|float}}</td>
-              <td>{{add_comma(stock.Volume)}}</td>
-              <td>{{add_comma(stock.change_volume)}}</td>
+              <td><a href="/addwatchlist/{{stock.Name}}.AX">Add</a></td>
               <td> 
-                  <form action="/dashboard" method="POST">
-                      <input type="text" value="{{stock.Name}}.AX" name="stock_name" id="stock_name" size="4">
-                      <input type="submit" value="dashboard">
-                  </form>
-              </td>
+                <form action="/dashboard" method="POST">
+                    <input type="text" value="{{stock.Name}}.AX" name="stock_name" id="stock_name" size="2">
+                    <input type="submit" value="dashboard">
+                </form>
+            </td>
+              <!-- <td>{{stock.Sector}}</td> -->
+              <td style ="background-color: rgba(78, 172, 216, 0.863);font-weight: bold;">${{ '%0.2f' % stock.Open|float}}</td>
+              <td style = "color:green; ">${{ '%0.2f' % stock.change_open|float}}</td>
+              <td style ="background-color: rgba(78, 172, 216, 0.863);font-weight: bold;">${{ '%0.2f' % stock.Close|float}}</td>
+              <td style = "color:green;">${{ '%0.2f' % stock.change_close|float}}</td>
+              <td style ="background-color: rgba(78, 172, 216, 0.863);">${{ '%0.2f' % stock.High|float}}</td>
+              <td style = "color:green">${{ '%0.2f' % stock.change_high|float}}</td>
+              <td style ="background-color: rgba(78, 172, 216, 0.863);">${{ '%0.2f' % stock.Low|float}}</td>
+              <td style = "color:green;">${{ '%0.2f' % stock.change_low|float}}</td>
+              <td style ="background-color: rgba(78, 172, 216, 0.863);">{{add_comma(stock.Volume)}}</td>
+              <td>{{add_comma(stock.change_volume)}}</td>
+              <td>${{ '%0.2f' % stock.CV|float}}</td>
+              <td style = "padding-right:7px"><a href="https://www2.asx.com.au/markets/trade-our-cash-market/announcements.{{stock.Name}}" target="_blank">Link</a></td>
+              
           </tr>
           {% endfor %}
           

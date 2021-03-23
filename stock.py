@@ -25,15 +25,15 @@ def get_current_price(symbol):
 
 #print(get_current_price('tsla'))
 
-def get_stock_info(symbol):
+def get_sector_info(symbol):
     ticker = yf.Ticker(symbol)
-    stockinfo = ticker.info
+    stockinfo = ticker.info['sector']
     
     # for key,value in stockinfo.items():
     #     temp = temp + str(key)+" : "+str(value)
     return stockinfo
 
-#print(get_stock_info('CBA.AX'))
+#print(get_sector_info('CBA.AX'))
 
 def stock_recommendations(symbol):
     ticker = yf.Ticker(symbol)
@@ -68,7 +68,7 @@ def stock_dividends(symbol):
 
 def stock_holders(symbol):
     ticker = yf.Ticker(symbol)
-    holders = ticker.major_holders
+    holders = ticker.institutional_holders
     data = []
     for i in holders[0]:
         data.append(i)
