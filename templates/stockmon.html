@@ -19,6 +19,8 @@
         padding-right:10px;
         padding-left:10px;
         white-space: nowrap;
+        font-size:85%;
+        
     }
   </style>
 </head>
@@ -68,10 +70,9 @@
   <div style="overflow-y: scroll; height: 650px">
     <div class="container">
       <table>
-          <tr>
+          <tr style = "background-color: rgba(150, 150, 150, 0.863);">
               <th> Stock code </th>
               <th>Watchlist</th>
-              <th>  </th>
               <th> Open</th>
               <th> </th>
               <th> Close</th>
@@ -82,20 +83,22 @@
               <th> </th>
               <th> Volume</th>
               <th> </th>
-              <th>Close * Volume</th>
-              <th>Announcements</th>
+              <th> 6mAvgVol </th>
+              <th> 12mAvgVol </th>
+              <th>$ value</th>
+              <th>News</th>
   
           </tr>
           {% for stock in monitorList %}
-          <tr>
-              <td style = "padding-right:7px">{{stock.Name}}</td>
-              <td><a href="/addwatchlist/{{stock.Name}}.AX">Add</a></td>
-              <td> 
-                <form action="/dashboard" method="POST">
-                    <input type="text" value="{{stock.Name}}.AX" name="stock_name" id="stock_name" size="2">
-                    <input type="submit" value="dashboard">
-                </form>
+          <tr style = "text-align: right;">
+            <td> 
+              <form action="/dashboard" method="POST">
+                  <input type="text" value="{{stock.Name}}" name="stock_name" id="stock_name" size="2">
+                  <input type="submit" value="dashboard">
+              </form>
             </td>
+              <td><a href="/addwatchlist/{{stock.Name}}">Add</a></td>
+              
               <!-- <td>{{stock.Sector}}</td> -->
               <td style ="background-color: rgba(78, 172, 216, 0.863);font-weight: bold;">${{ '%0.2f' % stock.Open|float}}</td>
               <td style = "color:green; ">${{ '%0.2f' % stock.change_open|float}}</td>
@@ -107,7 +110,9 @@
               <td style = "color:green;">${{ '%0.2f' % stock.change_low|float}}</td>
               <td style ="background-color: rgba(78, 172, 216, 0.863);">{{add_comma(stock.Volume)}}</td>
               <td>{{add_comma(stock.change_volume)}}</td>
-              <td>${{ '%0.2f' % stock.CV|float}}</td>
+              <td>{{add_comma(stock.vol6m)}}</td>
+              <td>{{add_comma(stock.vol12m)}}</td>
+              <td>${{ add_comma(stock.CV)}}</td>
               <td style = "padding-right:7px"><a href="https://www2.asx.com.au/markets/trade-our-cash-market/announcements.{{stock.Name}}" target="_blank">Link</a></td>
               
           </tr>

@@ -34,40 +34,11 @@ class Watchlist(db.Model):
     username = db.Column(db.String(200), nullable=False)
     stock_code = db.Column(db.String(200), nullable=False)
     date_added = db.Column(db.DateTime, default=datetime.now)
+    current_price = db.Column(db.Numeric, nullable=False)
 
     def __repr__(self):
         return '<Task %r>' % self.list_id
 
-# #download all stock history on the stock market to csv
-# def expand_database():
-#     with open('stock_names.csv') as csv_file:
-#         data = csv.reader(csv_file, delimiter=',')
-#         first_line = True
-#         sdatas = []
-#         for row in data:
-#             if not first_line:
-#                 try:
-#                     st.get_current_stock_history(str(row[0])+".AX")
-#                 except:
-#                     pass
-#             else:
-#                 first_line = False
-
-#     print("Stock history updated")
-
-def manual_update():
-    ind = 1
-    for filename in glob.glob("./stock_data/*.csv"):
-        print("Stock no: "+ind)
-        stock_name = filename
-        stock_name=stock_name.replace('./stock_data/', '')
-        stock_name=stock_name.replace('.csv', '')
-        try:
-            st.get_current_stock_history(stock_name)
-        except:
-            pass
-        ind = ind +1
-    print("Stock history updated")
 
 #Function to plot stock data into diagram
 def plot_graph(stock):
@@ -133,6 +104,33 @@ def average_volume(sdatas):
     volume_180 = volume_180/180
 
     return volume, volume_180
+
+def stockmon_volume(stock_name):
+    vol180 = 0
+    vol360 = 0
+    with open(stock_name) as csv_file:
+        data = csv.reader(csv_file, delimiter=',')
+        first_line = True
+        sdatas = []
+        for row in data:
+            if not first_line:
+                sdatas.append({
+                    "Date": row[0],
+                    "AdjClose": float(row[1]),
+                    "Close": float(row[2]),
+                    "High": float(row[3]),
+                    "Low": float(row[4]),
+                    "Open": float(row[5]),
+                    "Volume": int(row[6])
+                })
+            else:
+                first_line = False
+
+        avg_volume, avg_volume_180 = average_volume(sdatas)
+        avg_volume = int(avg_volume)
+        avg_volume_180 = int(avg_volume_180)
+
+    return avg_volume, avg_volume_180
 
 #function to format large volume numbers
 def add_comma(value):
@@ -203,7 +201,7 @@ def data(stock_name):
 def dashboard():
     if request.method == 'POST':
         stock_nm = request.form['stock_name']
-
+        stock_nm = stock_nm + ".AX"
         stock_display_nm = str(stock_nm)
         stock_display_nm = stock_nm.replace('.AX', '')
         current_price = st.get_current_price(stock_nm)
@@ -256,6 +254,8 @@ def stockmon():
         stock_nm = filename
         stock_nm=stock_nm.replace('./stock_data/', '')
         stock_nm=stock_nm.replace('.AX.csv', '')
+        vol6m, vol12m = stockmon_volume(filename)
+
         with open(filename) as csv_file:
             data = csv.reader(csv_file)
             rows = list(data)
@@ -282,9 +282,11 @@ def stockmon():
                     "Close":float(rows[360][2]),
                     "Low":float(rows[360][4]),
                     "Volume":int(rows[360][6]),
-                    "CV":float(rows[360][2])*int(rows[360][6])
+                    "vol6m":vol6m,
+                    "vol12m":vol12m,
+                    "CV":int(float(rows[360][2])*int(rows[360][6]))
                 }
-                if element['change_high'] > 0 and element['change_open'] > 0 and element['change_low'] > 0 and element['change_close'] > 0 and element['change_volume'] > 0:
+                if element['CV'] > 100000 and element['change_high'] > 0 and element['change_open'] > 0 and element['change_low'] > 0 and element['change_close'] > 0 and element['change_volume'] > 0:
                     monitorList.append(element)
             except:
                 pass
@@ -298,19 +300,24 @@ def watchlist():
     now = datetime.now()
     date_time = now.strftime("%d/%m/%Y, %H:%M:%S")
     for stock in stocks:
+        temp = float(st.get_current_price(stock.stock_code+".AX"))
         element = {
             "Name":stock.stock_code,
-            "Date_added":stock.date_added
+            "Date_added":stock.date_added,
+            "Added_price":float(stock.current_price),
+            "Current_price":temp,
+            "Price_change": float(stock.current_price)-temp
         }
         userlist.append(element)
-    return render_template('watchlist.html',date_time=date_time,userlist=userlist)
+    return render_template('watchlist.html',add_comma=add_comma,date_time=date_time,userlist=userlist)
 
 
 @app.route('/addwatchlist/<stock_cd>', methods=['POST', 'GET'])
 def add_list(stock_cd):
     stock_nm = stock_cd
     user = session["user"]
-    new_list_entry = Watchlist(username=user, stock_code=stock_nm)
+    c_price = st.get_current_price(stock_nm+".AX")
+    new_list_entry = Watchlist(username=user, stock_code=stock_nm, current_price=c_price)
 
     try:
         db.session.add(new_list_entry)
@@ -322,7 +329,7 @@ def add_list(stock_cd):
 
     # return redirect(request.referrer)
 
-@app.route('/remove')
+@app.route('/remove/<stock_name>')
 def remove():
     return redirect(request.referrer)
 
