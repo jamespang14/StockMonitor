@@ -298,11 +298,12 @@ def stockmon():
                     "vol12m":vol12m,
                     "CV":int(float(rows[360][2])*int(rows[360][6]))
                 }
-                if element['Volume']>0 and element['Volume']<1600000000 and element['Close']>0.01 and element['Close']<5 and element['CV'] > 100000 and element['change_high'] > 0 and element['change_open'] > 0 and element['change_low'] > 0 and element['change_close'] > 0 and element['change_volume'] > 0:
-                    monitorList.append(element)
+                if element['Close']>0.01 and element['Close']<5 and element['CV'] > 100000 and element['change_high'] > 0 and element['change_open'] > 0 and element['change_low'] > 0 and element['change_close'] > 0 and element['change_volume'] > 0:
+                    if element['Volume']>0 and element['Volume']<1600000000:
+                        monitorList.append(element)
             except:
                 pass
-
+    monitorList = sorted(monitorList, key=lambda k: k['Name'])            
     return render_template('stockmon.html', add_comma=add_comma, date_time=date_time, monitorList=monitorList)
 
 @app.route('/watchlist/', methods=['POST', 'GET'])
