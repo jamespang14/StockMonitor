@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stock Monitor</title>
+  
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" charset="utf-8"></script>
@@ -12,6 +12,8 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <title>Stock Monitor</title>
   <style>
     table, th, td {
         border: 1px solid rgba(139, 138, 138, 0.555);
@@ -22,7 +24,11 @@
         font-size:85%;
         
     }
+    td{
+      color: darkgoldenrod;
+    }
   </style>
+
 </head>
 
 <body>
@@ -46,7 +52,7 @@
       </div>
       <div class="item"><a href="/stockmon"><i class="fas fa-desktop"></i>Stock Monitor</a></div>
       <div class="item"><a href="/watchlist"><i class="fas fa-table"></i>Watchlist</a></div>
-      <div class="item"><a href="#"><i class="fas fa-th"></i>Feedback</a></div>
+      <div class="item"><a href="/feedback"><i class="fas fa-th"></i>Feedback</a></div>
       <div class="item">
         <a class="sub-btn"><i class="fas fa-cogs"></i>Settings<i class="fas fa-angle-right dropdown"></i></a>
         <div class="sub-menu">
@@ -72,7 +78,7 @@
       <table>
           <tr style = "background-color: rgba(150, 150, 150, 0.863);">
               <th> Stock code </th>
-              <th>Watchlist</th>
+              <th>Watch</th>
               <th> Open</th>
               <th> </th>
               <th> Close</th>
@@ -93,22 +99,70 @@
           <tr style = "text-align: right;">
             <td> 
               <form action="/dashboard" method="POST">
-                  <input type="text" value="{{stock.Name}}" name="stock_name" id="stock_name" size="2">
-                  <input type="submit" value="dashboard">
+                  <input type="text" value="{{stock.Name}}" name="stock_name" id="stock_name" size="3">
+                  <input type="submit" value="dash">
               </form>
             </td>
               <td><a href="/addwatchlist/{{stock.Name}}">Add</a></td>
               
               <!-- <td>{{stock.Sector}}</td> -->
-              <td style ="background-color: rgba(78, 172, 216, 0.863);font-weight: bold;">${{ '%0.2f' % stock.Open|float}}</td>
+              {% if stock.Open >= 0.1 %}
+              <td style ="background-color: rgba(78, 172, 216, 0.253);font-weight: bold;">${{ '%0.2f' % stock.Open|float}}</td>
+              {% endif %}
+              {% if stock.Open < 0.1 %}
+              <td style ="background-color: rgba(78, 172, 216, 0.219);font-weight: bold;">${{ '%0.3f' % stock.Open|float}}</td>
+              {% endif %}
+
+              {% if stock.change_open >= 0.1 %}
               <td style = "color:green; ">${{ '%0.2f' % stock.change_open|float}}</td>
-              <td style ="background-color: rgba(78, 172, 216, 0.863);font-weight: bold;">${{ '%0.2f' % stock.Close|float}}</td>
+              {% endif %}
+              {% if stock.change_open < 0.1 %}
+              <td style = "color:green; ">${{ '%0.3f' % stock.change_open|float}}</td>
+              {% endif %}
+
+              {% if stock.Close >= 0.1 %}
+              <td style ="background-color: rgba(78, 172, 216, 0.247);font-weight: bold;">${{ '%0.2f' % stock.Close|float}}</td>
+              {% endif %} 
+              {% if stock.Close < 0.1 %}
+              <td style ="background-color: rgba(78, 172, 216, 0.26);font-weight: bold;">${{ '%0.3f' % stock.Close|float}}</td>
+              {% endif %} 
+
+              {% if stock.change_close >= 0.1 %}
               <td style = "color:green;">${{ '%0.2f' % stock.change_close|float}}</td>
-              <td style ="background-color: rgba(78, 172, 216, 0.863);">${{ '%0.2f' % stock.High|float}}</td>
+              {% endif %}
+              {% if stock.change_close < 0.1 %}
+              <td style = "color:green;">${{ '%0.3f' % stock.change_close|float}}</td>
+              {% endif %}
+
+              {% if stock.High >= 0.1 %}
+              <td style ="background-color: rgba(78, 172, 216, 0.233);">${{ '%0.2f' % stock.High|float}}</td>
+              {% endif %}
+              {% if stock.High < 0.1 %}
+              <td style ="background-color: rgba(78, 172, 216, 0.267);">${{ '%0.3f' % stock.High|float}}</td>
+              {% endif %}
+
+              {% if stock.change_high >= 0.1 %}
               <td style = "color:green">${{ '%0.2f' % stock.change_high|float}}</td>
-              <td style ="background-color: rgba(78, 172, 216, 0.863);">${{ '%0.2f' % stock.Low|float}}</td>
+              {% endif %}
+              {% if stock.change_high < 0.1 %}
+              <td style = "color:green">${{ '%0.3f' % stock.change_high|float}}</td>
+              {% endif %}
+
+              {% if stock.Low >= 0.1 %}
+              <td style ="background-color: rgba(78, 172, 216, 0.274);">${{ '%0.2f' % stock.Low|float}}</td>
+              {% endif %}
+              {% if stock.Low < 0.1 %}
+              <td style ="background-color: rgba(78, 172, 216, 0.253);">${{ '%0.3f' % stock.Low|float}}</td>
+              {% endif %}
+
+              {% if stock.change_low >= 0.1 %}
               <td style = "color:green;">${{ '%0.2f' % stock.change_low|float}}</td>
-              <td style ="background-color: rgba(78, 172, 216, 0.863);">{{add_comma(stock.Volume)}}</td>
+              {% endif %}
+              {% if stock.change_low < 0.1 %}
+              <td style = "color:green;">${{ '%0.3f' % stock.change_low|float}}</td>
+              {% endif %}
+
+              <td style ="background-color: rgba(78, 172, 216, 0.253);">{{add_comma(stock.Volume)}}</td>
               <td>{{add_comma(stock.change_volume)}}</td>
               <td>{{add_comma(stock.vol6m)}}</td>
               <td>{{add_comma(stock.vol12m)}}</td>

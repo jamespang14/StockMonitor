@@ -39,6 +39,16 @@ class Watchlist(db.Model):
     def __repr__(self):
         return '<Task %r>' % self.list_id
 
+class Feedback(db.Model):
+    __tablename__ = 'feedback'
+    feedback_id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(200), nullable=False)
+    date_added = db.Column(db.DateTime, default=datetime.now)
+    feedback = db.Column(db.String(2000), nullable=False)
+
+    def __repr__(self):
+        return '<Task %r>' % self.feedback_id
+
 
 #Function to plot stock data into diagram
 def plot_graph(stock):
@@ -58,7 +68,6 @@ def plot_graph(stock):
         low = hist['Low']
     ))
     graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-
     return graphJSON
 
 #Calculate VWAP
@@ -113,18 +122,21 @@ def stockmon_volume(stock_name):
         first_line = True
         sdatas = []
         for row in data:
-            if not first_line:
-                sdatas.append({
-                    "Date": row[0],
-                    "AdjClose": float(row[1]),
-                    "Close": float(row[2]),
-                    "High": float(row[3]),
-                    "Low": float(row[4]),
-                    "Open": float(row[5]),
-                    "Volume": int(row[6])
-                })
-            else:
-                first_line = False
+            try:
+                if not first_line:
+                    sdatas.append({
+                        "Date": row[0],
+                        "AdjClose": float(row[1]),
+                        "Close": float(row[2]),
+                        "High": float(row[3]),
+                        "Low": float(row[4]),
+                        "Open": float(row[5]),
+                        "Volume": int(row[6])
+                    })
+                else:
+                    first_line = False
+            except:
+                pass
 
         avg_volume, avg_volume_180 = average_volume(sdatas)
         avg_volume = int(avg_volume)
@@ -170,7 +182,7 @@ def register():
 @app.route('/dashboard/data/<stock_name>', methods=['POST', 'GET'])
 def data(stock_name):
     if request.method == 'GET':
-        stock_display_nm = str(stock_name)
+        stock_display_nm = str(stock_name+".AX")
         now = datetime.now()
         date_time = now.strftime("%d/%m/%Y, %H:%M:%S")
         
@@ -239,7 +251,7 @@ def dashboard():
         avg_volume, avg_volume_180 = average_volume(sdatas)
         avg_volume = int(avg_volume)
         avg_volume_180 = int(avg_volume_180)
-        return render_template("dashboard.html",sector_info=sector_info,plot=plot ,add_comma=add_comma, avg_volume = avg_volume, avg_volume_180=avg_volume_180,vwap_180=vwap_180 , vwap = vwap , sdatas=sdatas,current_price=current_price, stock_display_nm=stock_display_nm, date_time=date_time)
+        return render_template("dashboard.html",sector_info=sector_info, plot=plot ,add_comma=add_comma, avg_volume = avg_volume, avg_volume_180=avg_volume_180,vwap_180=vwap_180 , vwap = vwap , sdatas=sdatas,current_price=current_price, stock_display_nm=stock_display_nm, date_time=date_time)
 
     return redirect('/stockmon')
 
@@ -286,7 +298,7 @@ def stockmon():
                     "vol12m":vol12m,
                     "CV":int(float(rows[360][2])*int(rows[360][6]))
                 }
-                if element['CV'] > 100000 and element['change_high'] > 0 and element['change_open'] > 0 and element['change_low'] > 0 and element['change_close'] > 0 and element['change_volume'] > 0:
+                if element['Volume']>0 and element['Volume']<1600000000 and element['Close']>0.01 and element['Close']<5 and element['CV'] > 100000 and element['change_high'] > 0 and element['change_open'] > 0 and element['change_low'] > 0 and element['change_close'] > 0 and element['change_volume'] > 0:
                     monitorList.append(element)
             except:
                 pass
@@ -302,6 +314,7 @@ def watchlist():
     for stock in stocks:
         temp = float(st.get_current_price(stock.stock_code+".AX"))
         element = {
+            "id":stock.list_id,
             "Name":stock.stock_code,
             "Date_added":stock.date_added,
             "Added_price":float(stock.current_price),
@@ -329,9 +342,28 @@ def add_list(stock_cd):
 
     # return redirect(request.referrer)
 
-@app.route('/remove/<stock_name>')
+@app.route('/remove/<stock_name>', methods=['POST', 'GET'])
 def remove():
     return redirect(request.referrer)
+
+@app.route('/feedback', methods=['POST', 'GET'])
+def feedback():
+    now = datetime.now()
+    date_time = now.strftime("%d/%m/%Y, %H:%M:%S")
+
+    if request.method == 'POST':
+        fback = request.form['feedback']
+        user = session["user"]
+        new_feedback = Feedback(username = user, feedback = fback)
+        
+        try:
+            db.session.add(new_feedback)
+            db.session.commit()
+            return render_template('feedback.html', date_time=date_time)
+        except:
+            return 'There was an issue posting feedback'
+    else:
+        return render_template('feedback.html', date_time=date_time)
 
 @app.route('/logout')
 def logout():
@@ -341,5 +373,3 @@ def logout():
 if __name__ == "__main__":
     app.run(debug=True)
 
-#stockmon:
-#volume * closed
