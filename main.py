@@ -366,6 +366,15 @@ def feedback():
     else:
         return render_template('feedback.html', date_time=date_time)
 
+@app.route('/checkfeedback', methods=['POST', 'GET'])
+def checkfeedback():
+    now = datetime.now()
+    date_time = now.strftime("%d/%m/%Y, %H:%M:%S")
+
+    feedbacks = Feedback.query.order_by(Feedback.feedback_id).all()
+    
+    return render_template('checkfeedback.html', feedbacks=feedbacks, date_time=date_time)
+
 @app.route('/logout')
 def logout():
     session.clear()

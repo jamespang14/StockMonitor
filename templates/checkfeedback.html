@@ -1,0 +1,39 @@
+{% extends 'content.html' %}
+
+{% block head %}
+<title>Check feedback</title>
+<style>
+    table, th, td {
+        border: 1px solid rgba(139, 138, 138, 0.555);
+        border-collapse: collapse;
+        padding-right:10px;
+        padding-left:10px;
+        white-space: nowrap;
+
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+
+<div class = "container">
+    <table>
+        <tr>
+            <th>id</th>
+            <th>User</th>
+            <th>date</th>
+            <th>feedback</th>
+        </tr>
+
+        {% for fdback in feedbacks %}
+        <tr>
+            <td>{{ fdback.feedback_id }}</td>
+            <td>{{ fdback.username }}</td>
+            <td>{{ fdback.date_added }}</td>
+            <td>{{ fdback.feedback }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+{% endblock %}
