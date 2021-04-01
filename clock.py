@@ -4,7 +4,7 @@ import pandas as pd
 import stock as st
 
 #update all stock datas in the folder within time interval
-sched = BlockingScheduler()
+#sched = BlockingScheduler()
 
 # #download all stock history on the stock market to csv
 # def expand_database():
@@ -23,9 +23,11 @@ sched = BlockingScheduler()
 
 #     print("Stock history updated")
 
-@sched.scheduled_job('interval', minutes=1440)
+#@sched.scheduled_job('interval', minutes=1440)
 def download_stock():
+    int signal = 0
     for filename in glob.glob("./stock_data/*.csv"):
+        signal = signal + 1
         stock_name = filename
         stock_name=stock_name.replace('./stock_data/', '')
         stock_name=stock_name.replace('.csv', '')
@@ -33,7 +35,8 @@ def download_stock():
             st.get_current_stock_history(stock_name)
         except:
             pass
+        print("Stock: "+signal)
     print("Stock history updated")
 
-# download_stock()
-sched.start()
+download_stock()
+#sched.start()

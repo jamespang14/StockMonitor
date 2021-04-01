@@ -37,29 +37,6 @@
             {% endif %}
             {% endfor %}
           </tr>
-          <!-- <tr>
-            <th style = "padding-right:10px">AdjClose</th>
-            {% for sdata in sdatas  |reverse %}
-            {% if loop.index <= 5 %}
-            <td style = "padding-right:7px">${{ sdata.AdjClose }}</td>
-            {% endif %}
-            {% endfor %}
-          </tr>
-          <tr>
-            <th style = "padding-right:10px"></th>
-            {% for sdata in sdatas  |reverse %}
-            {% if loop.index <= 5 %}
-              {% if sdata.AdjClose - sdatas[359-loop.index].AdjClose >= 0 %}
-              
-              <td style = "color:green">${{ sdata.AdjClose - sdatas[359-loop.index].AdjClose }}</td>
-              {% endif %}
-              {% if sdata.AdjClose - sdatas[359-loop.index].AdjClose < 0 %}
-              
-              <td style = "color:red">${{ sdata.AdjClose - sdatas[359-loop.index].AdjClose }}</td>
-              {% endif %}
-            {% endif %}
-            {% endfor %}
-          </tr> -->
           <tr>
             <th style = "padding-right:10px">Open</th>
             {% for sdata in sdatas %}
@@ -203,7 +180,8 @@
           </tr>
       </table>
       <br>
-      <th style = "padding-top:10px"><a href="/dashboard/data/{{stock_display_nm}}" class="btn btn-primary">See all Data</a></th>
+      <th style = "padding:10px"><a href="/dashboard/data/{{stock_display_nm}}" class="btn btn-primary">360d History</a></th>
+      <th style = "padding:10px"><a href="/stockmon" class="btn btn-primary"><i class="fas fa-desktop"></i> Back to list</a></th>
       </div>
   
       <div class="container">
