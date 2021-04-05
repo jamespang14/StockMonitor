@@ -39,6 +39,7 @@ def expand_database():
 #         print("Stock: "+signal)
 #     print("Stock history updated")
 
-expand_database()
+if __name__=="__main__":
+    expand_database()
 # download_stock()
 #sched.start()
