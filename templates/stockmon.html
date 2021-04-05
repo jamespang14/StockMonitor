@@ -23,6 +23,18 @@
   <div class="container">
     <H5>Stock Monitor</H5>
   </div>
+  <div class="container">
+    <label for="filter"><b>Stock filter:</b></label>
+    <form action="/stockmon" method="POST">
+      <select name="filter" id="filter">
+        <option value="3days">stock price increased for 3 days</option>
+        <option value="4days">stock price increased for 4 days</option>
+        <option value="5days">stock price increased for 5 days</option>
+      </select>
+      <input type="submit" value="Update">
+    </form>
+  </div>
+  <br>
   <div style="overflow-y: scroll; height: 650px">
     <div class="container">
       <table>

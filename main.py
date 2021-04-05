@@ -150,15 +150,25 @@ def add_comma(value):
     return temp
 
 #login route for the user
+# @app.route('/', methods=['POST', 'GET'])
+# def login():
+#     user = User.query.filter(
+#     User.username == request.form.get("login_user")).first()
+#     if user and user.password == request.form.get("login_password"):
+#         session["user"] = user.username
+#         return redirect("/stockmon")
+#     else:
+#         return render_template("login.html")
+
 @app.route('/', methods=['POST', 'GET'])
 def login():
     user = User.query.filter(
-        User.username == request.form.get("login_user")).first()
+    User.username == request.form.get("login_user")).first()
     if user and user.password == request.form.get("login_password"):
         session["user"] = user.username
         return redirect("/stockmon")
     else:
-        return render_template("login.html")
+        return render_template("index.html")
 
 #sign up route for users
 @app.route('/register', methods=['POST', 'GET'])
@@ -259,51 +269,106 @@ def dashboard():
 #main route / homepage after logging in
 @app.route('/stockmon', methods=['POST', 'GET'])
 def stockmon():
-    now = datetime.now()
-    date_time = now.strftime("%d/%m/%Y, %H:%M:%S")
-    monitorList = []
-    for filename in glob.glob("./stock_data/*.csv"):
-        stock_nm = filename
-        stock_nm=stock_nm.replace('./stock_data/', '')
-        stock_nm=stock_nm.replace('.AX.csv', '')
-        vol6m, vol12m = stockmon_volume(filename)
+    if request.method == 'POST':
+        stockmon_filter = request.form['filter']
+        now = datetime.now()
+        date_time = now.strftime("%d/%m/%Y, %H:%M:%S")
+        monitorList = []
+        for filename in glob.glob("./stock_data/*.csv"):
+            stock_nm = filename
+            stock_nm=stock_nm.replace('./stock_data/', '')
+            stock_nm=stock_nm.replace('.AX.csv', '')
+            vol6m, vol12m = stockmon_volume(filename)
 
-        with open(filename) as csv_file:
-            data = csv.reader(csv_file)
-            rows = list(data)
+            with open(filename) as csv_file:
+                data = csv.reader(csv_file)
+                rows = list(data)
 
-            try:
-                if float(rows[360][2]) and float(rows[360][2])<5 and int(float(rows[360][2])*int(rows[360][6])) > 100000:
-                    if int(rows[360][6]) > 0 and int(rows[360][6]) < 1600000000:
-                        element = {
-                            "Name": stock_nm,
-                            #"Sector":str(st.get_sector_info(filename)),
-                            "change_high": float(rows[360][3])-float(rows[359][3]),
-                            "change_open": float(rows[360][5])-float(rows[359][5]),
-                            "change_low": float(rows[360][4])-float(rows[359][4]),
-                            #"change_close_4": float(rows[356][2])-float(rows[355][2]),
-                            #"change_close_3": float(rows[357][2])-float(rows[356][2]),
-                            "change_close_2": float(rows[358][2])-float(rows[357][2]),
-                            "change_close_1": float(rows[359][2])-float(rows[358][2]),
-                            "change_close": float(rows[360][2])-float(rows[359][2]),
-                            "change_volume": int(rows[360][6])-int(rows[359][6]),
-                            "High":float(rows[360][3]),
-                            "Open":float(rows[360][5]),
-                            "Close":float(rows[360][2]),
-                            "Low":float(rows[360][4]),
-                            "Volume":int(rows[360][6]),
-                            "vol6m":vol6m,
-                            "vol12m":vol12m,
-                            "CV":int(float(rows[360][2])*int(rows[360][6]))
-                        }
-                        if element['change_high'] > 0 and element['change_open'] > 0 and element['change_low'] > 0 and element['change_close'] > 0 and element['change_volume'] > 0:
-                            if element['change_close_1'] > 0 and element['change_close_2'] > 0:
-                                monitorList.append(element)
-            except:
-                pass
+                try:
+                    if float(rows[360][2]) and float(rows[360][2])<5 and int(float(rows[360][2])*int(rows[360][6])) > 100000:
+                        if int(rows[360][6]) > 0 and int(rows[360][6]) < 1600000000:
+                            element = {
+                                "Name": stock_nm,
+                                #"Sector":str(st.get_sector_info(filename)),
+                                "change_high": float(rows[360][3])-float(rows[359][3]),
+                                "change_open": float(rows[360][5])-float(rows[359][5]),
+                                "change_low": float(rows[360][4])-float(rows[359][4]),
+                                "change_close_4": float(rows[356][2])-float(rows[355][2]),
+                                "change_close_3": float(rows[357][2])-float(rows[356][2]),
+                                "change_close_2": float(rows[358][2])-float(rows[357][2]),
+                                "change_close_1": float(rows[359][2])-float(rows[358][2]),
+                                "change_close": float(rows[360][2])-float(rows[359][2]),
+                                "change_volume": int(rows[360][6])-int(rows[359][6]),
+                                "High":float(rows[360][3]),
+                                "Open":float(rows[360][5]),
+                                "Close":float(rows[360][2]),
+                                "Low":float(rows[360][4]),
+                                "Volume":int(rows[360][6]),
+                                "vol6m":vol6m,
+                                "vol12m":vol12m,
+                                "CV":int(float(rows[360][2])*int(rows[360][6]))
+                            }
+                            if element['change_high'] > 0 and element['change_open'] > 0 and element['change_low'] > 0 and element['change_close'] > 0 and element['change_volume'] > 0:
+                                if stockmon_filter == "3days":
+                                    if element['change_close_1'] > 0 and element['change_close_2'] > 0:
+                                        monitorList.append(element)
+                                if stockmon_filter == "4days":
+                                    if element['change_close_1'] > 0 and element['change_close_2'] > 0 and element['change_close_3'] > 0:
+                                        monitorList.append(element)
+                                if stockmon_filter == "5days":
+                                    if element['change_close_1'] > 0 and element['change_close_2'] > 0 and element['change_close_3'] > 0 and element['change_close_4'] > 0:
+                                        monitorList.append(element)
+                except:
+                    pass
 
-    monitorList = sorted(monitorList, key=lambda k: k['Name'])            
-    return render_template('stockmon.html', add_comma=add_comma, date_time=date_time, monitorList=monitorList)
+        monitorList = sorted(monitorList, key=lambda k: k['Name'])            
+        return render_template('stockmon.html', add_comma=add_comma, date_time=date_time, monitorList=monitorList)
+    else:
+        now = datetime.now()
+        date_time = now.strftime("%d/%m/%Y, %H:%M:%S")
+        monitorList = []
+        for filename in glob.glob("./stock_data/*.csv"):
+            stock_nm = filename
+            stock_nm=stock_nm.replace('./stock_data/', '')
+            stock_nm=stock_nm.replace('.AX.csv', '')
+            vol6m, vol12m = stockmon_volume(filename)
+
+            with open(filename) as csv_file:
+                data = csv.reader(csv_file)
+                rows = list(data)
+
+                try:
+                    if float(rows[360][2]) and float(rows[360][2])<5 and int(float(rows[360][2])*int(rows[360][6])) > 100000:
+                        if int(rows[360][6]) > 0 and int(rows[360][6]) < 1600000000:
+                            element = {
+                                "Name": stock_nm,
+                                #"Sector":str(st.get_sector_info(filename)),
+                                "change_high": float(rows[360][3])-float(rows[359][3]),
+                                "change_open": float(rows[360][5])-float(rows[359][5]),
+                                "change_low": float(rows[360][4])-float(rows[359][4]),
+                                "change_close_4": float(rows[356][2])-float(rows[355][2]),
+                                "change_close_3": float(rows[357][2])-float(rows[356][2]),
+                                "change_close_2": float(rows[358][2])-float(rows[357][2]),
+                                "change_close_1": float(rows[359][2])-float(rows[358][2]),
+                                "change_close": float(rows[360][2])-float(rows[359][2]),
+                                "change_volume": int(rows[360][6])-int(rows[359][6]),
+                                "High":float(rows[360][3]),
+                                "Open":float(rows[360][5]),
+                                "Close":float(rows[360][2]),
+                                "Low":float(rows[360][4]),
+                                "Volume":int(rows[360][6]),
+                                "vol6m":vol6m,
+                                "vol12m":vol12m,
+                                "CV":int(float(rows[360][2])*int(rows[360][6]))
+                            }
+                            if element['change_high'] > 0 and element['change_open'] > 0 and element['change_low'] > 0 and element['change_close'] > 0 and element['change_volume'] > 0:
+                                if element['change_close_1'] > 0 and element['change_close_2'] > 0:
+                                    monitorList.append(element)
+                except:
+                    pass
+
+        monitorList = sorted(monitorList, key=lambda k: k['Name'])            
+        return render_template('stockmon.html', add_comma=add_comma, date_time=date_time, monitorList=monitorList)
 
 @app.route('/watchlist/', methods=['POST', 'GET'])
 def watchlist():
