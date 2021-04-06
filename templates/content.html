@@ -11,44 +11,36 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   {% block head %}{% endblock %}
 </head>
 
 <body> 
   <div class="menu-btn">
-    <i class="fas fa-bars"></i>
+    <a href="/stockmon"><i class="fa fa-bank" style="font-size:30px;"></i></a>
+    <br><br>
+    <i class="fas fa-bars" style="padding-left:5px;"></i>
   </div>
-  <br>
   <div class="side-bar">
     <div class="close-btn">
       <i class="fas fa-times"></i>
     </div>
     <div class="menu">
-      <div class="item">
-        <a href="#" class="sub-item">
+      <div class="item" style="padding:20px;">
           Search stock code:
           <form action="/dashboard" method="POST">
-            <input type="text" name="stock_name" id="stock_name">
+            <input type="text" name="stock_name" id="stock_name" size="3">
             <input type="submit" value="Search">
           </form>
-        </a>
       </div>
       <div class="item"><a href="/stockmon"><i class="fas fa-desktop"></i>Stock Monitor</a></div>
       <div class="item"><a href="/watchlist"><i class="fas fa-table"></i>Watchlist</a></div>
       <div class="item"><a href="/feedback"><i class="fas fa-th"></i>Feedback</a></div>
-      <div class="item">
-        <a class="sub-btn"><i class="fas fa-cogs"></i>Settings<i class="fas fa-angle-right dropdown"></i></a>
-        <div class="sub-menu">
-          <a href="#" class="sub-item">Sub Item 01</a>
-          <a href="#" class="sub-item">Sub Item 02</a>
-        </div>
-      </div>
       <div class="item"><a href="#"><i class="fas fa-info-circle"></i>About Stock Monitor</a></div>
       <div class="item"><a href="/logout"><i class="fas fa-user-alt-slash"></i>Logout</a></div>
     </div>
   </div>
-
+  <br>
   <div class="container">
     <p>Date and time: {{ date_time }}</p>
   </div>
