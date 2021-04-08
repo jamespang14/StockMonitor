@@ -24,24 +24,7 @@
   <section class="main">
     <div class="container">
       <h4>{{stock_display_nm}} Full Stock history</h4>
-      <!-- <table>
-          <tr>
-              <th>Date</th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-          </tr>
-          {% for sdata in sdatas %}
-          <tr>
-            <td></td>
-          </tr>
-          {% endfor %}
-      </table> -->
+
       <div style="overflow-x: scroll; width:90%;">
         <table>
             <tr>
@@ -50,29 +33,16 @@
               <td style = "padding-right:7px">{{ sdata.Date }}</td>
               {% endfor %}
             </tr>
-            <!-- <tr>
-              <th style = "padding-right:10px">AdjClose</th>
-              {% for sdata in sdatas |reverse  %}
-              <td style = "padding-right:7px">${{ sdata.AdjClose }}</td>
-              {% endfor %}
-            </tr>
-            <tr>
-              <th style = "padding-right:10px"></th>
-              {% for sdata in sdatas |reverse  %}
-                {% if sdata.AdjClose - sdatas[359-loop.index].AdjClose >= 0 %}
-                
-                <td style = "color:green">${{ sdata.AdjClose - sdatas[359-loop.index].AdjClose }}</td>
-                {% endif %}
-                {% if sdata.AdjClose - sdatas[359-loop.index].AdjClose < 0 %}
-                
-                <td style = "color:red">${{ sdata.AdjClose - sdatas[359-loop.index].AdjClose }}</td>
-                {% endif %}
-              {% endfor %}
-            </tr> -->
             <tr>
                 <th style = "padding-right:10px">Open</th>
                 {% for sdata in sdatas  |reverse %}
+                {% if sdata.Open >= 0.1 %}
                 <td style = "padding-right:7px">${{ '%0.2f' % sdata.Open|float }}</td>
+                {% endif %}
+                {% if sdata.Open < 0.1 %}
+                <td style = "padding-right:7px">${{ '%0.3f' % sdata.Open|float }}</td>
+                {% endif %}
+                
                 {% endfor %}
               </tr>
               <tr>
@@ -80,19 +50,35 @@
                 {% for sdata in sdatas  |reverse %}
                 {% set change_open = sdata.Open - sdatas[359-loop.index].Open %}
                   {% if change_open >= 0 %}
-                  
+                  {% if sdata.Open >= 0.1 %}
                   <td style = "color:green">${{ '%0.2f' % change_open|float }}</td>
+                {% endif %}
+                {% if sdata.Open < 0.1 %}
+                <td style = "color:green">${{ '%0.3f' % change_open|float }}</td>
+                {% endif %}
+                  
                   {% endif %}
                   {% if change_open < 0 %}
-                  
+                  {% if sdata.Open >= 0.1 %}
                   <td style = "color:red">${{ '%0.2f' % change_open|float }}</td>
+                {% endif %}
+                {% if sdata.Open < 0.1 %}
+                <td style = "color:red">${{ '%0.3f' % change_open|float }}</td>
+                {% endif %}
+                  
                   {% endif %}
                 {% endfor %}
               </tr>
               <tr>
                 <th style = "padding-right:10px">Close</th>
                 {% for sdata in sdatas  |reverse %}
+                {% if sdata.Open >= 0.1 %}
                 <td style = "padding-right:7px">${{ '%0.2f' % sdata.Close|float }}</td>
+                {% endif %}
+                {% if sdata.Open < 0.1 %}
+                <td style = "padding-right:7px">${{ '%0.3f' % sdata.Close|float }}</td>
+                {% endif %}
+                
                 {% endfor %}
               </tr>
               <tr>
@@ -100,19 +86,35 @@
                 {% for sdata in sdatas  |reverse %}
                 {% set change_close = sdata.Close - sdatas[359-loop.index].Close %}
                   {% if change_close >= 0 %}
-                  
+                  {% if sdata.Open >= 0.1 %}
                   <td style = "color:green">${{ '%0.2f' % change_close|float }}</td>
+                {% endif %}
+                {% if sdata.Open < 0.1 %}
+                <td style = "color:green">${{ '%0.3f' % change_close|float }}</td>
+                {% endif %}
+                  
                   {% endif %}
                   {% if change_close < 0 %}
-                  
+                  {% if sdata.Open >= 0.1 %}
                   <td style = "color:red">${{ '%0.2f' % change_close|float }}</td>
+                {% endif %}
+                {% if sdata.Open < 0.1 %}
+                <td style = "color:red">${{ '%0.3f' % change_close|float }}</td>
+                {% endif %}
+                  
                   {% endif %}
                 {% endfor %}
               </tr>
               <tr>
                 <th style = "padding-right:10px">High</th>
                 {% for sdata in sdatas  |reverse %}
+                {% if sdata.Open >= 0.1 %}
                 <td style = "padding-right:7px">${{ '%0.2f' % sdata.High|float }}</td>
+                {% endif %}
+                {% if sdata.Open < 0.1 %}
+                <td style = "padding-right:7px">${{ '%0.3f' % sdata.High|float }}</td>
+                {% endif %}
+                
                 {% endfor %}
               </tr>
               <tr>
@@ -120,19 +122,35 @@
                 {% for sdata in sdatas  |reverse %}
                 {% set change_high = sdata.High - sdatas[359-loop.index].High %}
                   {% if change_high >= 0 %}
-                  
+                  {% if sdata.Open >= 0.1 %}
                   <td style = "color:green">${{ '%0.2f' % change_high|float }}</td>
+                {% endif %}
+                {% if sdata.Open < 0.1 %}
+                <td style = "color:green">${{ '%0.3f' % change_high|float }}</td>
+                {% endif %}
+                  
                   {% endif %}
                   {% if change_high < 0 %}
-                  
+                  {% if sdata.Open >= 0.1 %}
                   <td style = "color:red">${{ '%0.2f' % change_high|float }}</td>
+                {% endif %}
+                {% if sdata.Open < 0.1 %}
+                <td style = "color:red">${{ '%0.3f' % change_high|float }}</td>
+                {% endif %}
+                  
                   {% endif %}
                 {% endfor %}
               </tr>
               <tr>
                 <th style = "padding-right:10px">Low</th>
                 {% for sdata in sdatas  |reverse %}
+                {% if sdata.Open >= 0.1 %}
                 <td style = "padding-right:7px">${{ '%0.2f' % sdata.Low|float }}</td>
+                {% endif %}
+                {% if sdata.Open < 0.1 %}
+                <td style = "padding-right:7px">${{ '%0.3f' % sdata.Low|float }}</td>
+                {% endif %}
+                
                 {% endfor %}
               </tr>
               <tr>
@@ -140,12 +158,22 @@
                 {% for sdata in sdatas  |reverse %}
                 {% set change_low = sdata.Low - sdatas[359-loop.index].Low %}
                   {% if change_low >= 0 %}
-                  
+                  {% if sdata.Open >= 0.1 %}
                   <td style = "color:green">${{ '%0.2f' % change_low|float }}</td>
+                {% endif %}
+                {% if sdata.Open < 0.1 %}
+                <td style = "color:green">${{ '%0.3f' % change_low|float }}</td>
+                {% endif %}
+                  
                   {% endif %}
                   {% if change_low < 0 %}
-                  
+                  {% if sdata.Open >= 0.1 %}
                   <td style = "color:red">${{ '%0.2f' % change_low|float }}</td>
+                {% endif %}
+                {% if sdata.Open < 0.1 %}
+                <td style = "color:red">${{ '%0.3f' % change_low|float }}</td>
+                {% endif %}
+                  
                   {% endif %}
                 {% endfor %}
               </tr>

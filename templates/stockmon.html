@@ -10,30 +10,28 @@
         padding-left:10px;
         white-space: nowrap;
         font-size:85%;
-        
     }
     td{
-      color: darkgoldenrod;
+      color: rgb(156, 115, 10);
     }
   </style>
 
 {% endblock %}
 
 {% block body %}
-  <div class="container">
+  <!-- <div class="container">
     <H5>Stock Monitor</H5>
-  </div>
+  </div> -->
+  <div class="container" ><h3 style = "font-family: Poppins, sans-serif;">StockMonitor</h3></div>
   <div class="container">
-    <label for="filter"><b>Stock filter:</b></label>
-    <form action="/stockmon" method="POST">
-      <select name="filter" id="filter">
-        <option value="3days">stock price increased for 3 days</option>
-        <option value="4days">stock price increased for 4 days</option>
-        <option value="5days">stock price increased for 5 days</option>
-      </select>
-      <input type="submit" value="Update">
-    </form>
+    <h6 style = "font-family: Poppins, sans-serif;">Stocks filtered by price of:</h6>
+    <div class="btn-group btn-group-justified">
+      <a href="/stockmon/3days" class="btn btn-primary">3 days</a>
+      <a href="/stockmon/4days" class="btn btn-primary">4 days</a>
+      <a href="/stockmon/5days" class="btn btn-primary">5 days</a>
+    </div>
   </div>
+
   <br>
   <div style="overflow-y: scroll; height: 650px">
     <div class="container">
@@ -41,6 +39,7 @@
           <tr style = "background-color: rgba(150, 150, 150, 0.863);">
               <th> Stock </th>
               <th>Watch</th>
+              <th>News</th>
               <th> Open</th>
               <th> </th>
               <th> Close</th>
@@ -54,19 +53,20 @@
               <th> 6mAvgVol </th>
               <th> 12mAvgVol </th>
               <th>$ value</th>
-              <th>News</th>
+              
   
           </tr>
           {% for stock in monitorList %}
           <tr style = "text-align: right;">
-            <td> 
-              <form action="/dashboard" method="POST">
-                  <input type="text" value="{{stock.Name}}" name="stock_name" id="stock_name" size="2">
+            <td style = "text-align: center;font-weight: bold;color:rgb(69, 104, 219)"> 
+              <!-- <form action="/dashboard" method="POST">
+                  <input type="text" value="{{stock.Name}}" name="stock_name" id="stock_name" size="3">
                   <input type="submit" value="dash">
-              </form>
+              </form> -->
+              <a style = "font-size: larger;" href="/dashboard/{{stock.Name}}">{{stock.Name}}</a>
             </td>
-              <td><a href="/addwatchlist/{{stock.Name}}">Add</a></td>
-              
+              <td style = "text-align: center;"><a style = "padding: 2px;" class="btn btn-primary btn-sm" href="/addwatchlist/{{stock.Name}}">Add</a></td>
+              <td style = "text-align: center;"><a style = "padding: 2px;" class="btn btn-outline-primary btn-sm" href="https://www2.asx.com.au/markets/trade-our-cash-market/announcements.{{stock.Name}}" target="_blank">Link</a></td>
               <!-- <td>{{stock.Sector}}</td> -->
               {% if stock.Open >= 0.1 %}
               <td style ="background-color: rgba(78, 172, 216, 0.253);font-weight: bold;">${{ '%0.2f' % stock.Open|float}}</td>
@@ -125,11 +125,11 @@
               {% endif %}
 
               <td style ="background-color: rgba(78, 172, 216, 0.253);">{{add_comma(stock.Volume)}}</td>
-              <td>{{add_comma(stock.change_volume)}}</td>
+              <td style = "color:green;">{{add_comma(stock.change_volume)}}</td>
               <td>{{add_comma(stock.vol6m)}}</td>
               <td>{{add_comma(stock.vol12m)}}</td>
               <td>${{ add_comma(stock.CV)}}</td>
-              <td style = "padding-right:7px"><a href="https://www2.asx.com.au/markets/trade-our-cash-market/announcements.{{stock.Name}}" target="_blank">Link</a></td>
+              
               
           </tr>
           {% endfor %}

@@ -12,40 +12,39 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
   {% block head %}{% endblock %}
 </head>
-
 <body> 
-  <div class="menu-btn">
-    <a href="/stockmon"><i class="fa fa-bank" style="font-size:30px;"></i></a>
-    <br><br>
-    <i class="fas fa-bars" style="padding-left:5px;"></i>
-  </div>
-  <div class="side-bar">
-    <div class="close-btn">
-      <i class="fas fa-times"></i>
-    </div>
-    <div class="menu">
-      <div class="item" style="padding:20px;">
-          Search stock code:
-          <form action="/dashboard" method="POST">
-            <input type="text" name="stock_name" id="stock_name" size="3">
-            <input type="submit" value="Search">
-          </form>
-      </div>
-      <div class="item"><a href="/stockmon"><i class="fas fa-desktop"></i>Stock Monitor</a></div>
-      <div class="item"><a href="/watchlist"><i class="fas fa-table"></i>Watchlist</a></div>
-      <div class="item"><a href="/feedback"><i class="fas fa-th"></i>Feedback</a></div>
-      <div class="item"><a href="#"><i class="fas fa-info-circle"></i>About Stock Monitor</a></div>
-      <div class="item"><a href="/logout"><i class="fas fa-user-alt-slash"></i>Logout</a></div>
+  <div class="w3-sidebar w3-blue-gray w3-bar-block" style="width:12%">
+      <br>
+      <br>
+      <a href="/stockmon/3days" class="w3-bar-item w3-button"><i class="fas fa-desktop"></i> StockMon</a>
+      <br>
+      <a href="/watchlist" class="w3-bar-item w3-button"><i class="fas fa-table"></i> Watchlist</a>
+      <br>
+      <a href="/feedback" class="w3-bar-item w3-button"><i class="fas fa-th"></i> Feedback</a>
+      <br>
+      <a href="#" class="w3-bar-item w3-button"><i class="fas fa-info-circle"></i> About</a>
+      <br>
+      <a href="/logout"  class="w3-bar-item w3-button"><i class="fas fa-user-alt-slash"></i> Logout</a>
+      
+      <div class="w3-bar-item" style="padding:20px;">
+        Search stock:
+        <br>
+        <input type="text" name="stock_name" id="stock_name" size="5">
+        <br>
+        <button id="search" onclick="location.href='/dashboard/' + document.getElementById('stock_name').value">search</button>
     </div>
   </div>
-  <br>
-  <div class="container">
+  <div class="w3-container w3-teal" style="margin-left:12%;">
+    <br>
     <p>Date and time: {{ date_time }}</p>
   </div>
-
-  {% block body %}{% endblock %}  
+  <div style="margin-left:12%;">
+    {% block body %}{% endblock %} 
+  </div>
+  
 
   <script type="text/javascript">
     $(document).ready(function () {

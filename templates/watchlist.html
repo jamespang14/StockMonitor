@@ -21,7 +21,8 @@
     <div class="container">
       <table>
           <tr style = "background-color: rgba(150, 150, 150, 0.863);">
-              <th> Stock code </th>
+              <th> Stock </th>
+              <th>News</th>
             <th>Date added</th>
             <th>Price added</th>
             <th>Current price</th>
@@ -30,12 +31,10 @@
           </tr>
           {% for stock in userlist %}
           <tr style = "text-align: right;">
-            <td> 
-                <form action="/dashboard" method="POST">
-                    <input type="text" value="{{stock.Name}}" name="stock_name" id="stock_name" size="2">
-                    <input type="submit" value="dashboard">
-                </form>
+            <td style = "text-align: center;"> 
+              <a href="/dashboard/{{stock.Name}}">{{stock.Name}}</a>
               </td>
+              <td><a href="https://www2.asx.com.au/markets/trade-our-cash-market/announcements.{{stock.Name}}" target="_blank">Link</a></td>
               <td>{{stock.Date_added}}</td>
               <td>${{'%0.2f' % stock.Added_price|float}}</td>
               <td>${{'%0.2f' % stock.Current_price|float}}</td>
@@ -47,7 +46,7 @@
               
               <td style = "color:red">${{ '%0.2f' % stock.Price_change|float }}</td>
               {% endif %}
-              <td><a href="/remove/{{stock.Name}}">remove</a></td>
+              <td style = "text-align: center;"><a href="/remove/{{stock.id}}">remove</a></td>
           </tr>
           {% endfor %}
           

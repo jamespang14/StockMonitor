@@ -24,7 +24,8 @@
 {% endblock %}
 
 {% block body %}
-  <div style="overflow-y: scroll; height: 700px">
+ <br> <div class="container"><a href="javascript:history.back()" class="btn btn-primary"><i class="fas fa-desktop"></i> Back to list</a></div>
+  <div style="overflow-y: scroll; height: 700px;">
     <section class="main">
       <div class="container">
         <h4>Short List (Previous 5 trading days)</h4>
@@ -41,7 +42,12 @@
             <th style = "padding-right:10px">Open</th>
             {% for sdata in sdatas %}
             {% if loop.index > 355 %}
+            {% if sdata.Open >= 0.1 %}
             <td style = "padding-right:7px">${{ '%0.2f' % sdata.Open|float }}</td>
+            {% endif %}
+            {% if sdata.Open < 0.1 %}
+            <td style = "padding-right:7px">${{ '%0.3f' % sdata.Open|float }}</td>
+            {% endif %}
             {% endif %}
             {% endfor %}
           </tr>
@@ -51,12 +57,22 @@
             {% if loop.index > 355 %}
             {% set change_open = sdata.Open - sdatas[loop.index-2].Open %}
               {% if change_open >= 0 %}
-              
+              {% if sdata.Open >= 0.1 %}
               <td style = "color:green">${{ '%0.2f' % change_open|float }}</td>
               {% endif %}
-              {% if change_open < 0 %}
+              {% if sdata.Open < 0.1 %}
+              <td style = "color:green">${{ '%0.3f' % change_open|float }}</td>
+              {% endif %}
               
+              {% endif %}
+              {% if change_open < 0 %}
+              {% if sdata.Open >= 0.1 %}
               <td style = "color:red">${{ '%0.2f' % change_open|float }}</td>
+              {% endif %}
+              {% if sdata.Open < 0.1 %}
+              <td style = "color:red">${{ '%0.3f' % change_open|float }}</td>
+              {% endif %}
+              
               {% endif %}
             {% endif %}
             {% endfor %}
@@ -65,7 +81,13 @@
             <th style = "padding-right:10px">Close</th>
             {% for sdata in sdatas %}
             {% if loop.index > 355 %}
+            {% if sdata.Open >= 0.1 %}
             <td style = "padding-right:7px">${{ '%0.2f' % sdata.Close|float }}</td>
+              {% endif %}
+              {% if sdata.Open < 0.1 %}
+              <td style = "padding-right:7px">${{ '%0.3f' % sdata.Close|float }}</td>
+              {% endif %}
+            
             {% endif %}
             {% endfor %}
           </tr>
@@ -75,12 +97,22 @@
             {% if loop.index > 355 %}
             {% set change_close = sdata.Close - sdatas[loop.index-2].Close %}
               {% if change_close >= 0 %}
-              
+              {% if sdata.Open >= 0.1 %}
               <td style = "color:green">${{ '%0.2f' % change_close|float }}</td>
               {% endif %}
-              {% if change_close < 0 %}
+              {% if sdata.Open < 0.1 %}
+              <td style = "color:green">${{ '%0.3f' % change_close|float }}</td>
+              {% endif %}
               
+              {% endif %}
+              {% if change_close < 0 %}
+              {% if sdata.Open >= 0.1 %}
               <td style = "color:red">${{ '%0.2f' % change_close|float }}</td>
+              {% endif %}
+              {% if sdata.Open < 0.1 %}
+              <td style = "color:red">${{ '%0.3f' % change_close|float }}</td>
+              {% endif %}
+              
               {% endif %}
             {% endif %}
             {% endfor %}
@@ -89,7 +121,13 @@
             <th style = "padding-right:10px">High</th>
             {% for sdata in sdatas %}
             {% if loop.index > 355 %}
+            {% if sdata.Open >= 0.1 %}
             <td style = "padding-right:7px">${{ '%0.2f' % sdata.High|float }}</td>
+              {% endif %}
+              {% if sdata.Open < 0.1 %}
+              <td style = "padding-right:7px">${{ '%0.3f' % sdata.High|float }}</td>
+              {% endif %}
+            
             {% endif %}
             {% endfor %}
           </tr>
@@ -99,12 +137,22 @@
             {% if loop.index > 355 %}
             {% set change_high = sdata.High - sdatas[loop.index-2].High %}
               {% if change_high >= 0 %}
-              
+              {% if sdata.Open >= 0.1 %}
               <td style = "color:green">${{ '%0.2f' % change_high|float }}</td>
               {% endif %}
-              {% if change_high < 0 %}
+              {% if sdata.Open < 0.1 %}
+              <td style = "color:green">${{ '%0.3f' % change_high|float }}</td>
+              {% endif %}
               
+              {% endif %}
+              {% if change_high < 0 %}
+              {% if sdata.Open >= 0.1 %}
               <td style = "color:red">${{ '%0.2f' % change_high|float }}</td>
+              {% endif %}
+              {% if sdata.Open < 0.1 %}
+              <td style = "color:red">${{ '%0.3f' % change_high|float }}</td>
+              {% endif %}
+              
               {% endif %}
             {% endif %}
             {% endfor %}
@@ -113,6 +161,12 @@
             <th style = "padding-right:10px">Low</th>
             {% for sdata in sdatas %}
             {% if loop.index > 355 %}
+            {% if sdata.Open >= 0.1 %}
+
+              {% endif %}
+              {% if sdata.Open < 0.1 %}
+              
+              {% endif %}
             <td style = "padding-right:7px">${{ '%0.2f' % sdata.Low|float }}</td>
             {% endif %}
             {% endfor %}
@@ -123,12 +177,22 @@
             {% if loop.index > 355 %}
             {% set change_low = sdata.Low - sdatas[loop.index-2].Low %}
               {% if change_low >= 0 %}
-              
+              {% if sdata.Open >= 0.1 %}
               <td style = "color:green">${{ '%0.2f' % change_low|float }}</td>
               {% endif %}
-              {% if change_low < 0 %}
+              {% if sdata.Open < 0.1 %}
+              <td style = "color:green">${{ '%0.3f' % change_low|float }}</td>
+              {% endif %}
               
+              {% endif %}
+              {% if change_low < 0 %}
+              {% if sdata.Open >= 0.1 %}
               <td style = "color:red">${{ '%0.2f' % change_low|float }}</td>
+              {% endif %}
+              {% if sdata.Open < 0.1 %}
+              <td style = "color:red">${{ '%0.3f' % change_low|float }}</td>
+              {% endif %}
+              
               {% endif %}
             {% endif %}
             {% endfor %}
@@ -206,29 +270,38 @@
             <th style = "padding-right:10px">VWAP12m</th>
             <td style = "padding-right:7px">${{'%0.2f' % vwap|float}}</td>
           </tr>
-          <tr>
-            <th style = "padding-right:10px">News</th>
-            <td style = "padding-right:7px"><a href="https://www2.asx.com.au/markets/trade-our-cash-market/announcements.{{stock_display_nm}}" target="_blank">Link</a></td>
-          </tr>
       </table>
       <br>
-      <th style = "padding:10px"><a href="/dashboard/data/{{stock_display_nm}}" class="btn btn-primary">360d History</a></th>
-      <th style = "padding:10px"><a href="javascript:history.back()" class="btn btn-primary"><i class="fas fa-desktop"></i> Back to list</a></th>
+      <th style = "padding:10px"><a href="/dashboard/data/{{stock_display_nm}}" class="btn btn-primary">12m History</a></th>
+      
       </div>
-  
       <div class="container">
-        <div class="card" style="width:320px">
-          <div class="card-body">
-            <h2 class="card-title">{{ stock_display_nm }}</h2>
-            <h4 class="card-text">Current Price: ${{ '%0.2f' % current_price|float }}</h4>
-            <h4>Sector: </h4>
-            <h4>{{ sector_info }}</h4>
-            <a href="/addwatchlist/{{stock_display_nm}}" class="btn btn-primary">Add Watchlist</a>
-            <!-- <a href="#" class="btn btn-primary">See CF & BS</a>  -->
-            <a href="#" class="btn btn-primary">Analysis</a>     
+        <br>
+        <div>
+          <div class="card" style="width:320px">
+            <div class="card-body">
+              <h2 class="card-title">{{ stock_display_nm }}</h2>
+              <h4 class="card-text">Current Price: ${{ '%0.2f' % current_price|float }}</h4>
+              <h4>Sector: </h4>
+              <h4>{{ sector_info }}</h4>
+              <a href="/addwatchlist/{{stock_display_nm}}" class="btn btn-primary">Add Watchlist</a>
+              <!-- <a href="#" class="btn btn-primary">See CF & BS</a>  -->
+              <a href="https://www2.asx.com.au/markets/trade-our-cash-market/announcements.{{stock_display_nm}}" class="btn btn-primary">News</a>     
+            </div>
           </div>
         </div>
+        <br>
+        <div>
+          <h5>Intra-day:</h5> <a href="#" class="btn btn-primary">Today</a><br>
+          {% set price_chg = current_price-sdatas[359].Open %}
+          {% set pct_chg = (current_price-sdatas[359].Open)/sdatas[359].Open %}
+          Price change: ${{ '%0.2f' % price_chg|float }}
+          <br>
+          Pct change: {{ '%0.2f' % pct_chg|float }}%
+          <br><br>
+        </div>
       </div>
+      
     </section>
 
     <div class = "container">
@@ -241,15 +314,7 @@
       </div>
     </div>
   
-    <div class = "container">
-      <h5>Intra-day:</h5> <a href="#" class="btn btn-primary">Today</a><br>
-      {% set price_chg = current_price-sdatas[359].Open %}
-      {% set pct_chg = (current_price-sdatas[359].Open)/sdatas[359].Open %}
-      Price change: ${{ '%0.2f' % price_chg|float }}
-      <br>
-      Pct change: {{ '%0.2f' % pct_chg|float }}%
-      <br><br>
-    </div>
+    
   
  
     {% endblock %}

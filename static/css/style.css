@@ -15,7 +15,7 @@ body {
 }
 
 .side-bar {
-  background: rgb(219, 219, 219);
+  background: rgb(124, 152, 228);
   backdrop-filter: blur(15px);
   width: 290px;
   height: 100vh;
@@ -42,7 +42,7 @@ body {
 }
 
 .side-bar .menu .item a {
-  color: rgb(17, 16, 16);
+  color: rgb(52, 60, 97);
   font-size: 16px;
   text-decoration: none;
   display: block;
@@ -51,7 +51,7 @@ body {
 }
 
 .side-bar .menu .item a:hover {
-  background: #7c7c7c9f;
+  background: #6c75c7ab;
   transition: 0.3s ease;
 }
 
@@ -67,7 +67,7 @@ body {
 }
 
 .side-bar .menu .item .sub-menu {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(88, 110, 207, 0.1);
   display: none;
 }
 
@@ -100,7 +100,7 @@ body {
   /* height: 100vh; */
   display: flex;
   justify-content: center;
-  padding: 50px;
+  /* padding: 40px; */
 }
 
 .main h1 {
