@@ -163,11 +163,12 @@
             {% if loop.index > 355 %}
             {% if sdata.Open >= 0.1 %}
 
+            <td style = "padding-right:7px">${{ '%0.2f' % sdata.Low|float }}</td>
               {% endif %}
               {% if sdata.Open < 0.1 %}
               
+            <td style = "padding-right:7px">${{ '%0.3f' % sdata.Low|float }}</td>
               {% endif %}
-            <td style = "padding-right:7px">${{ '%0.2f' % sdata.Low|float }}</td>
             {% endif %}
             {% endfor %}
           </tr>

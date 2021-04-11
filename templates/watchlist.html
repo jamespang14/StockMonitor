@@ -26,7 +26,7 @@
             <th>Date added</th>
             <th>Price added</th>
             <th>Current price</th>
-            <th>Price_change</th>
+            <th>Price change</th>
               <th> </th>
           </tr>
           {% for stock in userlist %}
@@ -39,12 +39,22 @@
               <td>${{'%0.2f' % stock.Added_price|float}}</td>
               <td>${{'%0.2f' % stock.Current_price|float}}</td>
               {% if stock.Price_change >= 0 %}
-              
+              {% if sdata.Open >= 0.1 %}
               <td style = "color:green">${{ '%0.2f' % stock.Price_change|float }}</td>
               {% endif %}
-              {% if stock.Price_change < 0 %}
+              {% if sdata.Open < 0.1 %}
+              <td style = "color:green">${{ '%0.3f' % stock.Price_change|float }}</td>
+              {% endif %}
               
+              {% endif %}
+              {% if stock.Price_change < 0 %}
+              {% if sdata.Open >= 0.1 %}
               <td style = "color:red">${{ '%0.2f' % stock.Price_change|float }}</td>
+              {% endif %}
+              {% if sdata.Open < 0.1 %}
+              <td style = "color:red">${{ '%0.3f' % stock.Price_change|float }}</td>
+              {% endif %}
+              
               {% endif %}
               <td style = "text-align: center;"><a href="/remove/{{stock.id}}">remove</a></td>
           </tr>
