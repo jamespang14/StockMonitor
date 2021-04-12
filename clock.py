@@ -7,23 +7,6 @@ import stock as st
 #update all stock datas in the folder within time interval
 sched = BlockingScheduler()
 
-#download all stock history on the stock market to csv
-# def expand_database():
-#     with open('stock_names.csv') as csv_file:
-#         data = csv.reader(csv_file, delimiter=',')
-#         first_line = True
-#         sdatas = []
-#         for row in data:
-#             if not first_line:
-#                 try:
-#                     st.get_current_stock_history(str(row[0])+".AX")
-#                 except:
-#                     pass
-#             else:
-#                 first_line = False
-
-#     print("Stock history updated")
-
 @sched.scheduled_job('interval', minutes=1440)
 def download_stock():
     signal = 0
@@ -39,7 +22,8 @@ def download_stock():
         print("Stock: "+str(signal))
     print("Stock history updated")
 
-# if __name__=="__main__":
-#     download_stock()
+@sched.scheduled_job('interval', minutes=3)
+def timed_job():
+    print('The scheduler is working')
 
 sched.start()
