@@ -5,6 +5,7 @@ from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 import glob
 import json
+import pytz
 import pandas as pd
 import stock as st
 import plotly
@@ -193,8 +194,9 @@ def register():
 def data(stock_name):
     if request.method == 'GET':
         stock_display_nm = str(stock_name+".AX")
-        now = datetime.now()
-        date_time = now.strftime("%d/%m/%Y, %H:%M:%S")
+        tz=pytz.timezone('Australia/Adelaide')
+        now = datetime.now(tz)
+        date_time = now.strftime("%d/%m/%Y, %H:%M")
         
         with open('stock_data/'+stock_display_nm+'.csv') as csv_file:
             data = csv.reader(csv_file, delimiter=',')
@@ -240,8 +242,9 @@ def dashboard(stock_nm):
             pass
         #st.get_current_stock_history(stock_nm)
         #st_recco = st.stock_recommendations(stock_nm)
-        now = datetime.now()
-        date_time = now.strftime("%d/%m/%Y, %H:%M:%S")
+        tz=pytz.timezone('Australia/Adelaide')
+        now = datetime.now(tz)
+        date_time = now.strftime("%d/%m/%Y, %H:%M")
         plot = plot_graph(stock_nm)
 
         with open('stock_data/'+stock_nm+'.csv') as csv_file:
@@ -275,8 +278,9 @@ def dashboard(stock_nm):
 @app.route('/stockmon/<stockmon_filter>', methods=['POST', 'GET'])
 def stockmon(stockmon_filter):
     if request.method == 'GET':
-        now = datetime.now()
-        date_time = now.strftime("%d/%m/%Y, %H:%M:%S")
+        tz=pytz.timezone('Australia/Adelaide')
+        now = datetime.now(tz)
+        date_time = now.strftime("%d/%m/%Y, %H:%M")
         monitorList = []
         for filename in glob.glob("./stock_data/*.csv"):
             stock_nm = filename
@@ -336,8 +340,9 @@ def stockmon(stockmon_filter):
 def watchlist():
     stocks = Watchlist.query.filter(Watchlist.username == session.get("user")).all()
     userlist = []
-    now = datetime.now()
-    date_time = now.strftime("%d/%m/%Y, %H:%M:%S")
+    tz=pytz.timezone('Australia/Adelaide')
+    now = datetime.now(tz)
+    date_time = now.strftime("%d/%m/%Y, %H:%M")
     for stock in stocks:
         temp = float(st.get_current_price(stock.stock_code+".AX"))
         element = {
@@ -382,8 +387,9 @@ def remove(list_id):
 
 @app.route('/feedback', methods=['POST', 'GET'])
 def feedback():
-    now = datetime.now()
-    date_time = now.strftime("%d/%m/%Y, %H:%M:%S")
+    tz=pytz.timezone('Australia/Adelaide')
+    now = datetime.now(tz)
+    date_time = now.strftime("%d/%m/%Y, %H:%M")
 
     if request.method == 'POST':
         fback = request.form['feedback']
@@ -401,8 +407,9 @@ def feedback():
 
 @app.route('/checkfeedback', methods=['POST', 'GET'])
 def checkfeedback():
-    now = datetime.now()
-    date_time = now.strftime("%d/%m/%Y, %H:%M:%S")
+    tz=pytz.timezone('Australia/Adelaide')
+    now = datetime.now(tz)
+    date_time = now.strftime("%d/%m/%Y, %H:%M")
 
     feedbacks = Feedback.query.order_by(Feedback.feedback_id).all()
     
