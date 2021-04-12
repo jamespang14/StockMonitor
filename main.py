@@ -166,7 +166,7 @@ def login():
     User.username == request.form.get("login_user")).first()
     if user and user.password == request.form.get("login_password"):
         session["user"] = user.username
-        return redirect("/stockmon/3days")
+        return redirect("/stockmon/1day")
     else:
         return render_template("index.html")
 
