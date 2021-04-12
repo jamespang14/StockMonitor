@@ -228,8 +228,12 @@ def dashboard(stock_nm):
         stock_nm = stock_nm + ".AX"
         stock_display_nm = str(stock_nm)
         stock_display_nm = stock_nm.replace('.AX', '')
-        current_price = st.get_current_price(stock_nm)
         sector_info=''
+        current_price= 0
+        try:
+            current_price = st.get_current_price(stock_nm)
+        except:
+            pass
         try:
             sector_info = str(st.get_sector_info(stock_nm))
         except:
@@ -285,7 +289,7 @@ def stockmon(stockmon_filter):
                 rows = list(data)
 
                 try:
-                    if float(rows[360][2]) and float(rows[360][2])<5 and int(float(rows[360][2])*int(rows[360][6])) > 100000:
+                    if float(rows[360][2])<5 and int(float(rows[360][2])*int(rows[360][6])) > 100000:
                         if int(rows[360][6]) > 0 and int(rows[360][6]) < 1600000000:
                             element = {
                                 "Name": stock_nm,
@@ -308,7 +312,7 @@ def stockmon(stockmon_filter):
                                 "vol12m":vol12m,
                                 "CV":int(float(rows[360][2])*int(rows[360][6]))
                             }
-                            if element['Volume'] > element['vol6m'] and element['change_high'] > 0 and element['change_open'] > 0 and element['change_low'] > 0 and element['change_close'] > 0 and element['change_volume'] > 0:
+                            if element['change_high'] > 0 and element['change_open'] > 0 and element['change_low'] > 0 and element['change_close'] > 0 and element['change_volume'] > 0:
                                 if stockmon_filter == "3days":
                                     if element['change_close_1'] > 0 and element['change_close_2'] > 0:
                                         monitorList.append(element)
@@ -318,6 +322,8 @@ def stockmon(stockmon_filter):
                                 if stockmon_filter == "5days":
                                     if element['change_close_1'] > 0 and element['change_close_2'] > 0 and element['change_close_3'] > 0 and element['change_close_4'] > 0:
                                         monitorList.append(element)
+                                if stockmon_filter == "1day":
+                                    monitorList.append(element)
                 except:
                     pass
 
