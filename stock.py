@@ -1,14 +1,11 @@
 import yfinance as yf
 import pandas as pd
-#from alpha_vantage.timeseries import TimeSeries
+import pytz
 from datetime import datetime
-# import matplotlib  
-# matplotlib.use('TkAgg') 
-# import matplotlib.pyplot as plt
-#plt.style.use('seaborn')
 
-api_key = '00KXYJUV0DWBZY95'#alpha vantage api key
-now = datetime.now().strftime("%Y-%m-%d")
+tz=pytz.timezone('Australia/Adelaide')
+now = datetime.now(tz)
+date_time = now.strftime("%Y/%m/%d")
 
 def get_current_stock_history(symbol):
     ticker = yf.Ticker(symbol)
@@ -87,13 +84,7 @@ def string_stock_info(symbol):
 
 
 def search_stock(stock_name):
-    data_df = yf.download(stock_name, start="2020-02-01", end="2020-03-20")
+    data_df = yf.download(stock_name, period='360d', end="2020-03-20")
     data_df.to_csv('stock_data/'+stock_name+'.csv')
 
-
-def cal_data():
-    return 0
-
-
-def update_timer():
-    return 0
+#search_stock("BMN.AX")

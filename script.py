@@ -11,10 +11,10 @@ def update_data():
         stock_name=stock_name.replace('./stock_data/', '')
         stock_name=stock_name.replace('.csv', '')
         try:
-            st.get_current_stock_history(stock_name)
+            st.search_stock(stock_name)
         except:
             pass
-        print("Stock: "+str(signal))
+        print(stock_name+": "+str(signal))
     print("Stock history updated")
 
 update_data()
