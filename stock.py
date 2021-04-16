@@ -84,7 +84,8 @@ def string_stock_info(symbol):
 
 
 def search_stock(stock_name):
-    data_df = yf.download(stock_name, period='360d', end="2020-03-20")
+    data_df = yf.download(stock_name, period='360d')
+    print(data_df)
     data_df.to_csv('stock_data/'+stock_name+'.csv')
 
-#search_stock("BMN.AX")
+search_stock("ABR.AX")
