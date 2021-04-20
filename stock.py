@@ -88,4 +88,4 @@ def search_stock(stock_name):
     print(data_df)
     data_df.to_csv('stock_data/'+stock_name+'.csv')
 
-search_stock("ABR.AX")
+#search_stock("ABR.AX")
