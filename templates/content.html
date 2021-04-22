@@ -1,72 +1,96 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+    />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+      charset="utf-8"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
+    {% block head %}{% endblock %}
+  </head>
+  <body>
+    <div class="w3-sidebar w3-blue-gray w3-bar-block" style="width: 12%">
+      <br />
+      <br />
+      <a href="/stockmon/1day" class="w3-bar-item w3-button"
+        ><i class="fas fa-desktop"></i> StockMon</a
+      >
+      <br />
+      <a href="/watchlist/{{ user_name }}" class="w3-bar-item w3-button"
+        ><i class="fas fa-table"></i> Watchlist</a
+      >
+      <br />
+      <a href="/feedback" class="w3-bar-item w3-button"
+        ><i class="fas fa-th"></i> Feedback</a
+      >
+      <br />
+      <a href="#" class="w3-bar-item w3-button"
+        ><i class="fas fa-info-circle"></i> About</a
+      >
+      <br />
+      <a href="/logout" class="w3-bar-item w3-button"
+        ><i class="fas fa-user-alt-slash"></i> Logout</a
+      >
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" charset="utf-8"></script>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-  {% block head %}{% endblock %}
-</head>
-<body> 
-  <div class="w3-sidebar w3-blue-gray w3-bar-block" style="width:12%">
-      <br>
-      <br>
-      <a href="/stockmon/3days" class="w3-bar-item w3-button"><i class="fas fa-desktop"></i> StockMon</a>
-      <br>
-      <a href="/watchlist" class="w3-bar-item w3-button"><i class="fas fa-table"></i> Watchlist</a>
-      <br>
-      <a href="/feedback" class="w3-bar-item w3-button"><i class="fas fa-th"></i> Feedback</a>
-      <br>
-      <a href="#" class="w3-bar-item w3-button"><i class="fas fa-info-circle"></i> About</a>
-      <br>
-      <a href="/logout"  class="w3-bar-item w3-button"><i class="fas fa-user-alt-slash"></i> Logout</a>
-      
-      <div class="w3-bar-item" style="padding:20px;">
+      <div class="w3-bar-item" style="padding: 20px">
         Search stock:
-        <br>
-        <input type="text" name="stock_name" id="stock_name" size="5">
-        <br>
-        <button id="search" onclick="location.href='/dashboard/' + document.getElementById('stock_name').value">search</button>
+        <br />
+        <input type="text" name="stock_name" id="stock_name" size="5" />
+        <br />
+        <button
+          id="search"
+          onclick="location.href='/dashboard/' + document.getElementById('stock_name').value"
+        >
+          search
+        </button>
+      </div>
     </div>
-  </div>
-  <div class="w3-container w3-teal" style="margin-left:12%;">
-    <br>
-    <p>Date and time: {{ date_time }}</p>
-  </div>
-  <div style="margin-left:12%;">
-    {% block body %}{% endblock %} 
-  </div>
-  
+    <div class="w3-container w3-teal" style="margin-left: 12%">
+      <br />
+      <p>Date and time: {{ date_time }}</p>
+    </div>
+    <div style="margin-left: 12%">{% block body %}{% endblock %}</div>
 
-  <script type="text/javascript">
-    $(document).ready(function () {
-      //jquery for toggle sub menus
-      $('.sub-btn').click(function () {
-        $(this).next('.sub-menu').slideToggle();
-        $(this).find('.dropdown').toggleClass('rotate');
+    <script type="text/javascript">
+      $(document).ready(function () {
+        //jquery for toggle sub menus
+        $(".sub-btn").click(function () {
+          $(this).next(".sub-menu").slideToggle();
+          $(this).find(".dropdown").toggleClass("rotate");
+        });
+
+        //jquery for expand and collapse the sidebar
+        $(".menu-btn").click(function () {
+          $(".side-bar").addClass("active");
+          $(".menu-btn").css("visibility", "hidden");
+        });
+
+        $(".close-btn").click(function () {
+          $(".side-bar").removeClass("active");
+          $(".menu-btn").css("visibility", "visible");
+        });
       });
-
-      //jquery for expand and collapse the sidebar
-      $('.menu-btn').click(function () {
-        $('.side-bar').addClass('active');
-        $('.menu-btn').css("visibility", "hidden");
-      });
-
-      $('.close-btn').click(function () {
-        $('.side-bar').removeClass('active');
-        $('.menu-btn').css("visibility", "visible");
-      });
-    });
-  </script>
-
-</body>
-
+    </script>
+  </body>
 </html>

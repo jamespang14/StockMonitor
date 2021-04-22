@@ -193,6 +193,7 @@ def register():
 @app.route('/dashboard/data/<stock_name>', methods=['POST', 'GET'])
 def data(stock_name):
     if request.method == 'GET':
+        user_name = session["user"]
         stock_display_nm = str(stock_name+".AX")
         tz=pytz.timezone('Australia/Adelaide')
         now = datetime.now(tz)
@@ -216,7 +217,7 @@ def data(stock_name):
                 else:
                     first_line = False
 
-        return render_template("data.html", add_comma=add_comma, sdatas=sdatas, stock_display_nm=stock_display_nm, date_time=date_time)
+        return render_template("data.html",user_name=user_name, add_comma=add_comma, sdatas=sdatas, stock_display_nm=stock_display_nm, date_time=date_time)
     return render_template('data.html')
 
 #dashboard route
@@ -224,6 +225,7 @@ def data(stock_name):
 @app.route('/dashboard/<stock_nm>', methods=['POST', 'GET'])
 def dashboard(stock_nm):
     if request.method == 'GET':
+        user_name = session["user"]
         if len(str(stock_nm)) > 7:
             stock_nm = stock_nm.replace('?stock_name=', '')
         #stock_nm = request.form['stock_name']
@@ -270,7 +272,7 @@ def dashboard(stock_nm):
         avg_volume, avg_volume_180 = average_volume(sdatas)
         avg_volume = int(avg_volume)
         avg_volume_180 = int(avg_volume_180)
-        return render_template("dashboard.html",sector_info=sector_info, plot=plot ,add_comma=add_comma, avg_volume = avg_volume, avg_volume_180=avg_volume_180,vwap_180=vwap_180 , vwap = vwap , sdatas=sdatas,current_price=current_price, stock_display_nm=stock_display_nm, date_time=date_time)
+        return render_template("dashboard.html",user_name=user_name,sector_info=sector_info, plot=plot ,add_comma=add_comma, avg_volume = avg_volume, avg_volume_180=avg_volume_180,vwap_180=vwap_180 , vwap = vwap , sdatas=sdatas,current_price=current_price, stock_display_nm=stock_display_nm, date_time=date_time)
     return redirect('/stockmon')
 
 #route to filter out stocks that fits the criteria
@@ -278,6 +280,7 @@ def dashboard(stock_nm):
 @app.route('/stockmon/<stockmon_filter>', methods=['POST', 'GET'])
 def stockmon(stockmon_filter):
     if request.method == 'GET':
+        user_name = session["user"]
         tz=pytz.timezone('Australia/Adelaide')
         now = datetime.now(tz)
         date_time = now.strftime("%d/%m/%Y, %H:%M")
@@ -316,7 +319,7 @@ def stockmon(stockmon_filter):
                                 "vol12m":vol12m,
                                 "CV":int(float(rows[360][2])*int(rows[360][6]))
                             }
-                            if element['change_high'] > 0 and element['change_open'] > 0 and element['change_low'] > 0 and element['change_close'] > 0 and element['change_volume'] > 0:
+                            if element['change_high'] > 0 and element['change_open'] > 0 and element['change_low'] > 0 and element['change_close'] > 0 and element['change_volume'] > 0 and element['Volume']>element['vol6m']:
                                 if stockmon_filter == "3days":
                                     if element['change_close_1'] > 0 and element['change_close_2'] > 0:
                                         monitorList.append(element)
@@ -332,13 +335,15 @@ def stockmon(stockmon_filter):
                     pass
 
         monitorList = sorted(monitorList, key=lambda k: k['Name'])            
-        return render_template('stockmon.html', add_comma=add_comma, date_time=date_time, monitorList=monitorList)
+        return render_template('stockmon.html',user_name=user_name, add_comma=add_comma, date_time=date_time, monitorList=monitorList)
         
-        return render_template('stockmon.html', add_comma=add_comma, date_time=date_time, monitorList=monitorList)
+        return render_template('stockmon.html',user_name=user_name, add_comma=add_comma, date_time=date_time, monitorList=monitorList)
 
-@app.route('/watchlist/', methods=['POST', 'GET'])
-def watchlist():
-    stocks = Watchlist.query.filter(Watchlist.username == session.get("user")).all()
+@app.route('/watchlist/<user_name>', methods=['POST', 'GET'])
+def watchlist(user_name):
+    #stocks = Watchlist.query.filter(Watchlist.username == session.get("user")).all()
+    # user=str(user_name)
+    stocks = Watchlist.query.filter(Watchlist.username == user_name).all()
     userlist = []
     tz=pytz.timezone('Australia/Adelaide')
     now = datetime.now(tz)
@@ -354,7 +359,7 @@ def watchlist():
             "Price_change": float(stock.current_price)-temp
         }
         userlist.append(element)
-    return render_template('watchlist.html',add_comma=add_comma,date_time=date_time,userlist=userlist)
+    return render_template('watchlist.html',user_name=user_name,add_comma=add_comma,date_time=date_time,userlist=userlist)
 
 
 @app.route('/addwatchlist/<stock_cd>', methods=['POST', 'GET'])
@@ -377,16 +382,17 @@ def add_list(stock_cd):
 @app.route('/remove/<int:list_id>', methods=['POST', 'GET'])
 def remove(list_id):
     task_to_delete = Watchlist.query.get_or_404(list_id)
-
+    user = session["user"]
     try:
         db.session.delete(task_to_delete)
         db.session.commit()
-        return redirect('/watchlist')
+        return redirect(request.referrer)
     except:
         return 'There was a problem deleting that task'
 
 @app.route('/feedback', methods=['POST', 'GET'])
 def feedback():
+    user_name = session["user"]
     tz=pytz.timezone('Australia/Adelaide')
     now = datetime.now(tz)
     date_time = now.strftime("%d/%m/%Y, %H:%M")
@@ -399,21 +405,22 @@ def feedback():
         try:
             db.session.add(new_feedback)
             db.session.commit()
-            return render_template('feedback.html', date_time=date_time)
+            return render_template('feedback.html',user_name=user_name, date_time=date_time)
         except:
             return 'There was an issue posting feedback'
     else:
-        return render_template('feedback.html', date_time=date_time)
+        return render_template('feedback.html',user_name=user_name, date_time=date_time)
 
 @app.route('/checkfeedback', methods=['POST', 'GET'])
 def checkfeedback():
+    user_name = session["user"]
     tz=pytz.timezone('Australia/Adelaide')
     now = datetime.now(tz)
     date_time = now.strftime("%d/%m/%Y, %H:%M")
 
     feedbacks = Feedback.query.order_by(Feedback.feedback_id).all()
     
-    return render_template('checkfeedback.html', feedbacks=feedbacks, date_time=date_time)
+    return render_template('checkfeedback.html',user_name=user_name, feedbacks=feedbacks, date_time=date_time)
 
 @app.route('/logout')
 def logout():

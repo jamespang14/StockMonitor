@@ -1,67 +1,64 @@
-{% extends 'content.html' %}
-
-{% block head %}
-  <title>Watchlist</title>
-  <style>
-    table, th, td {
-        border: 1px solid rgba(139, 138, 138, 0.555);
-        border-collapse: collapse;
-        padding-right:10px;
-        padding-left:10px;
-        white-space: nowrap;
-    }
-  </style>
-{% endblock %}
-
-{% block body %}
+{% extends 'content.html' %} {% block head %}
+<title>Watchlist</title>
+<style>
+  table,
+  th,
+  td {
+    border: 1px solid rgba(139, 138, 138, 0.555);
+    border-collapse: collapse;
+    padding-right: 10px;
+    padding-left: 10px;
+    white-space: nowrap;
+  }
+</style>
+{% endblock %} {% block body %}
+<div class="container">
+  <h5>Watchlist</h5>
+</div>
+<div style="overflow-y: scroll; height: 650px">
   <div class="container">
-    <H5>Watchlist</H5>
+    <table>
+      <tr style="background-color: rgba(150, 150, 150, 0.863)">
+        <th>Stock</th>
+        <th>News</th>
+        <th>Date added</th>
+        <th>Price added</th>
+        <th>Current price</th>
+        <th>Price change</th>
+        <th></th>
+      </tr>
+      {% for stock in userlist %}
+      <tr style="text-align: right">
+        <td style="text-align: center">
+          <a href="/dashboard/{{stock.Name}}">{{stock.Name}}</a>
+        </td>
+        <td>
+          <a
+            href="https://www2.asx.com.au/markets/trade-our-cash-market/announcements.{{stock.Name}}"
+            target="_blank"
+            >Link</a
+          >
+        </td>
+        <td>{{stock.Date_added}}</td>
+        <td>${{'%0.2f' % stock.Added_price|float}}</td>
+        <td>${{'%0.2f' % stock.Current_price|float}}</td>
+        {% if stock.Price_change >= 0 %} {% if stock.Price_change >= 0.1 %}
+        <td style="color: green">${{ '%0.2f' % stock.Price_change|float }}</td>
+        {% endif %} {% if stock.Price_change < 0.1 %}
+        <td style="color: green">${{ '%0.3f' % stock.Price_change|float }}</td>
+        {% endif %} {% endif %} {% if stock.Price_change < 0 %} {% if
+        stock.Price_change >= 0.1 %}
+        <td style="color: red">${{ '%0.2f' % stock.Price_change|float }}</td>
+        {% endif %} {% if stock.Price_change < 0.1 %}
+        <td style="color: red">${{ '%0.3f' % stock.Price_change|float }}</td>
+        {% endif %} {% endif %}
+        <td style="text-align: center">
+          <a href="/remove/{{stock.id}}">remove</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
   </div>
-  <div style="overflow-y: scroll; height: 650px">
-    <div class="container">
-      <table>
-          <tr style = "background-color: rgba(150, 150, 150, 0.863);">
-              <th> Stock </th>
-              <th>News</th>
-            <th>Date added</th>
-            <th>Price added</th>
-            <th>Current price</th>
-            <th>Price change</th>
-              <th> </th>
-          </tr>
-          {% for stock in userlist %}
-          <tr style = "text-align: right;">
-            <td style = "text-align: center;"> 
-              <a href="/dashboard/{{stock.Name}}">{{stock.Name}}</a>
-              </td>
-              <td><a href="https://www2.asx.com.au/markets/trade-our-cash-market/announcements.{{stock.Name}}" target="_blank">Link</a></td>
-              <td>{{stock.Date_added}}</td>
-              <td>${{'%0.2f' % stock.Added_price|float}}</td>
-              <td>${{'%0.2f' % stock.Current_price|float}}</td>
-              {% if stock.Price_change >= 0 %}
-              {% if sdata.Open >= 0.1 %}
-              <td style = "color:green">${{ '%0.2f' % stock.Price_change|float }}</td>
-              {% endif %}
-              {% if sdata.Open < 0.1 %}
-              <td style = "color:green">${{ '%0.3f' % stock.Price_change|float }}</td>
-              {% endif %}
-              
-              {% endif %}
-              {% if stock.Price_change < 0 %}
-              {% if sdata.Open >= 0.1 %}
-              <td style = "color:red">${{ '%0.2f' % stock.Price_change|float }}</td>
-              {% endif %}
-              {% if sdata.Open < 0.1 %}
-              <td style = "color:red">${{ '%0.3f' % stock.Price_change|float }}</td>
-              {% endif %}
-              
-              {% endif %}
-              <td style = "text-align: center;"><a href="/remove/{{stock.id}}">remove</a></td>
-          </tr>
-          {% endfor %}
-          
-      </table>
-    </div>
-  </div>
- 
-  {% endblock %}
+</div>
+
+{% endblock %}
