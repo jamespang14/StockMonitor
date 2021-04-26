@@ -1,143 +1,177 @@
-{% extends 'content.html' %}
+{% extends 'content.html' %} {% block head %}
+<title>Stock Monitor</title>
+<style>
+  table,
+  th,
+  td {
+    border: 1px solid rgba(139, 138, 138, 0.555);
+    border-collapse: collapse;
+    padding-right: 10px;
+    padding-left: 10px;
+    white-space: nowrap;
+    font-size: 85%;
+  }
+  td {
+    color: rgb(156, 115, 10);
+  }
+</style>
 
-{% block head %}
-  <title>Stock Monitor</title>
-  <style>
-    table, th, td {
-        border: 1px solid rgba(139, 138, 138, 0.555);
-        border-collapse: collapse;
-        padding-right:10px;
-        padding-left:10px;
-        white-space: nowrap;
-        font-size:85%;
-    }
-    td{
-      color: rgb(156, 115, 10);
-    }
-  </style>
-
-{% endblock %}
-
-{% block body %}
-  <!-- <div class="container">
+{% endblock %} {% block body %}
+<!-- <div class="container">
     <H5>Stock Monitor</H5>
   </div> -->
-  <div class="container" ><h3 style = "font-family: Poppins, sans-serif;">StockMonitor</h3></div>
-  <div class="container">
-    <h6 style = "font-family: Poppins, sans-serif;">Stocks filtered by price of:</h6>
-    <div class="btn-group btn-group-justified">
-      <a href="/stockmon/1day" class="btn btn-primary">1 day</a>
-      <a href="/stockmon/3days" class="btn btn-primary">3 days</a>
-      <a href="/stockmon/4days" class="btn btn-primary">4 days</a>
-      <a href="/stockmon/5days" class="btn btn-primary">5 days</a>
-    </div>
+<div class="container">
+  <h3 style="font-family: Poppins, sans-serif">StockMonitor</h3>
+</div>
+<div class="container">
+  <h6 style="font-family: Poppins, sans-serif">Stocks filtered by price of:</h6>
+  <div class="btn-group btn-group-justified">
+    {% if stockmon_filter == "1day" %}
+    <a href="/stockmon/1day" class="btn btn-primary">1 day</a>
+    {% else %}
+    <a href="/stockmon/1day" class="btn btn-secondary">1 day</a>
+    {% endif %} {% if stockmon_filter == "3days" %}
+    <a href="/stockmon/3days" class="btn btn-primary">3 days</a>
+    {% else %}
+    <a href="/stockmon/3days" class="btn btn-secondary">3 days</a>
+    {% endif %} {% if stockmon_filter == "4days" %}
+    <a href="/stockmon/4days" class="btn btn-primary">4 days</a>
+    {% else %}
+    <a href="/stockmon/4days" class="btn btn-secondary">4 days</a>
+    {% endif %} {% if stockmon_filter == "5days" %}
+    <a href="/stockmon/5days" class="btn btn-primary">5 days</a>
+    {% else %}
+    <a href="/stockmon/5days" class="btn btn-secondary">5 days</a>
+    {% endif %}
   </div>
+</div>
 
-  <br>
-  <div style="overflow-y: scroll; height: 650px">
-    <div class="container">
-      <table>
-          <tr style = "background-color: rgba(150, 150, 150, 0.863);">
-              <th> Stock </th>
-              <th>Watch</th>
-              <th>News</th>
-              <th> Open</th>
-              <th> </th>
-              <th> Close</th>
-              <th> </th>
-              <th> High</th>
-              <th> </th>
-              <th> Low</th>
-              <th> </th>
-              <th> Volume</th>
-              <th> </th>
-              <th> 6mAvgVol </th>
-              <th> 12mAvgVol </th>
-              <th>$ value</th>
-              
-  
-          </tr>
-          {% for stock in monitorList %}
-          <tr style = "text-align: right;">
-            <td style = "text-align: center;font-weight: bold;color:rgb(69, 104, 219)"> 
-              <!-- <form action="/dashboard" method="POST">
+<br />
+<div style="overflow-y: scroll; height: 650px">
+  <div class="container">
+    <table>
+      <tr style="background-color: rgba(150, 150, 150, 0.863)">
+        <th>Stock</th>
+        <th>Watch</th>
+        <th>News</th>
+        <th>Open</th>
+        <th></th>
+        <th>Close</th>
+        <th></th>
+        <th>High</th>
+        <th></th>
+        <th>Low</th>
+        <th></th>
+        <th>Volume</th>
+        <th></th>
+        <th>6mAvgVol</th>
+        <th>12mAvgVol</th>
+        <th>$ value</th>
+      </tr>
+      {% for stock in monitorList %}
+      <tr style="text-align: right">
+        <td
+          style="
+            text-align: center;
+            font-weight: bold;
+            color: rgb(69, 104, 219);
+          "
+        >
+          <!-- <form action="/dashboard" method="POST">
                   <input type="text" value="{{stock.Name}}" name="stock_name" id="stock_name" size="3">
                   <input type="submit" value="dash">
               </form> -->
-              <a style = "font-size: larger;" href="/dashboard/{{stock.Name}}">{{stock.Name}}</a>
-            </td>
-              <td style = "text-align: center;"><a style = "padding: 2px;" class="btn btn-primary btn-sm" href="/addwatchlist/{{stock.Name}}">Add</a></td>
-              <td style = "text-align: center;"><a style = "padding: 2px;" class="btn btn-outline-primary btn-sm" href="https://www2.asx.com.au/markets/trade-our-cash-market/announcements.{{stock.Name}}" target="_blank">Link</a></td>
-              <!-- <td>{{stock.Sector}}</td> -->
-              {% if stock.Open >= 0.1 %}
-              <td style ="background-color: rgba(78, 172, 216, 0.253);font-weight: bold;">${{ '%0.2f' % stock.Open|float}}</td>
-              {% endif %}
-              {% if stock.Open < 0.1 %}
-              <td style ="background-color: rgba(78, 172, 216, 0.219);font-weight: bold;">${{ '%0.3f' % stock.Open|float}}</td>
-              {% endif %}
+          <a style="font-size: larger" href="/dashboard/{{stock.Name}}"
+            >{{stock.Name}}</a
+          >
+        </td>
+        <td style="text-align: center">
+          <a
+            style="padding: 2px"
+            class="btn btn-primary btn-sm"
+            href="/addwatchlist/{{stock.Name}}"
+            >Add</a
+          >
+        </td>
+        <td style="text-align: center">
+          <a
+            style="padding: 2px"
+            class="btn btn-outline-primary btn-sm"
+            href="https://www2.asx.com.au/markets/trade-our-cash-market/announcements.{{stock.Name}}"
+            target="_blank"
+            >Link</a
+          >
+        </td>
+        <!-- <td>{{stock.Sector}}</td> -->
+        {% if stock.Open >= 0.1 %}
+        <td
+          style="background-color: rgba(78, 172, 216, 0.253); font-weight: bold"
+        >
+          ${{ '%0.2f' % stock.Open|float}}
+        </td>
+        {% endif %} {% if stock.Open < 0.1 %}
+        <td
+          style="background-color: rgba(78, 172, 216, 0.219); font-weight: bold"
+        >
+          ${{ '%0.3f' % stock.Open|float}}
+        </td>
+        {% endif %} {% if stock.change_open >= 0.1 %}
+        <td style="color: green">${{ '%0.2f' % stock.change_open|float}}</td>
+        {% endif %} {% if stock.change_open < 0.1 %}
+        <td style="color: green">${{ '%0.3f' % stock.change_open|float}}</td>
+        {% endif %} {% if stock.Close >= 0.1 %}
+        <td
+          style="background-color: rgba(78, 172, 216, 0.247); font-weight: bold"
+        >
+          ${{ '%0.2f' % stock.Close|float}}
+        </td>
+        {% endif %} {% if stock.Close < 0.1 %}
+        <td
+          style="background-color: rgba(78, 172, 216, 0.26); font-weight: bold"
+        >
+          ${{ '%0.3f' % stock.Close|float}}
+        </td>
+        {% endif %} {% if stock.change_close >= 0.1 %}
+        <td style="color: green">${{ '%0.2f' % stock.change_close|float}}</td>
+        {% endif %} {% if stock.change_close < 0.1 %}
+        <td style="color: green">${{ '%0.3f' % stock.change_close|float}}</td>
+        {% endif %} {% if stock.High >= 0.1 %}
+        <td style="background-color: rgba(78, 172, 216, 0.233)">
+          ${{ '%0.2f' % stock.High|float}}
+        </td>
+        {% endif %} {% if stock.High < 0.1 %}
+        <td style="background-color: rgba(78, 172, 216, 0.267)">
+          ${{ '%0.3f' % stock.High|float}}
+        </td>
+        {% endif %} {% if stock.change_high >= 0.1 %}
+        <td style="color: green">${{ '%0.2f' % stock.change_high|float}}</td>
+        {% endif %} {% if stock.change_high < 0.1 %}
+        <td style="color: green">${{ '%0.3f' % stock.change_high|float}}</td>
+        {% endif %} {% if stock.Low >= 0.1 %}
+        <td style="background-color: rgba(78, 172, 216, 0.274)">
+          ${{ '%0.2f' % stock.Low|float}}
+        </td>
+        {% endif %} {% if stock.Low < 0.1 %}
+        <td style="background-color: rgba(78, 172, 216, 0.253)">
+          ${{ '%0.3f' % stock.Low|float}}
+        </td>
+        {% endif %} {% if stock.change_low >= 0.1 %}
+        <td style="color: green">${{ '%0.2f' % stock.change_low|float}}</td>
+        {% endif %} {% if stock.change_low < 0.1 %}
+        <td style="color: green">${{ '%0.3f' % stock.change_low|float}}</td>
+        {% endif %}
 
-              {% if stock.change_open >= 0.1 %}
-              <td style = "color:green; ">${{ '%0.2f' % stock.change_open|float}}</td>
-              {% endif %}
-              {% if stock.change_open < 0.1 %}
-              <td style = "color:green; ">${{ '%0.3f' % stock.change_open|float}}</td>
-              {% endif %}
-
-              {% if stock.Close >= 0.1 %}
-              <td style ="background-color: rgba(78, 172, 216, 0.247);font-weight: bold;">${{ '%0.2f' % stock.Close|float}}</td>
-              {% endif %} 
-              {% if stock.Close < 0.1 %}
-              <td style ="background-color: rgba(78, 172, 216, 0.26);font-weight: bold;">${{ '%0.3f' % stock.Close|float}}</td>
-              {% endif %} 
-
-              {% if stock.change_close >= 0.1 %}
-              <td style = "color:green;">${{ '%0.2f' % stock.change_close|float}}</td>
-              {% endif %}
-              {% if stock.change_close < 0.1 %}
-              <td style = "color:green;">${{ '%0.3f' % stock.change_close|float}}</td>
-              {% endif %}
-
-              {% if stock.High >= 0.1 %}
-              <td style ="background-color: rgba(78, 172, 216, 0.233);">${{ '%0.2f' % stock.High|float}}</td>
-              {% endif %}
-              {% if stock.High < 0.1 %}
-              <td style ="background-color: rgba(78, 172, 216, 0.267);">${{ '%0.3f' % stock.High|float}}</td>
-              {% endif %}
-
-              {% if stock.change_high >= 0.1 %}
-              <td style = "color:green">${{ '%0.2f' % stock.change_high|float}}</td>
-              {% endif %}
-              {% if stock.change_high < 0.1 %}
-              <td style = "color:green">${{ '%0.3f' % stock.change_high|float}}</td>
-              {% endif %}
-
-              {% if stock.Low >= 0.1 %}
-              <td style ="background-color: rgba(78, 172, 216, 0.274);">${{ '%0.2f' % stock.Low|float}}</td>
-              {% endif %}
-              {% if stock.Low < 0.1 %}
-              <td style ="background-color: rgba(78, 172, 216, 0.253);">${{ '%0.3f' % stock.Low|float}}</td>
-              {% endif %}
-
-              {% if stock.change_low >= 0.1 %}
-              <td style = "color:green;">${{ '%0.2f' % stock.change_low|float}}</td>
-              {% endif %}
-              {% if stock.change_low < 0.1 %}
-              <td style = "color:green;">${{ '%0.3f' % stock.change_low|float}}</td>
-              {% endif %}
-
-              <td style ="background-color: rgba(78, 172, 216, 0.253);">{{add_comma(stock.Volume)}}</td>
-              <td style = "color:green;">{{add_comma(stock.change_volume)}}</td>
-              <td>{{add_comma(stock.vol6m)}}</td>
-              <td>{{add_comma(stock.vol12m)}}</td>
-              <td>${{ add_comma(stock.CV)}}</td>
-              
-              
-          </tr>
-          {% endfor %}
-          
-      </table>
-    </div>
+        <td style="background-color: rgba(78, 172, 216, 0.253)">
+          {{add_comma(stock.Volume)}}
+        </td>
+        <td style="color: green">{{add_comma(stock.change_volume)}}</td>
+        <td>{{add_comma(stock.vol6m)}}</td>
+        <td>{{add_comma(stock.vol12m)}}</td>
+        <td>${{ add_comma(stock.CV)}}</td>
+      </tr>
+      {% endfor %}
+    </table>
   </div>
-  
- 
+</div>
+
 {% endblock %}

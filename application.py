@@ -12,11 +12,11 @@ import plotly
 import plotly.graph_objects as go
 import yfinance as yf
 
-app = Flask(__name__)
-app.secret_key = "StockMonita"
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Stockinfo.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
+application = Flask(__name__)
+application.secret_key = "StockMonita"
+application.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Stockinfo.db'
+application.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(application)
 
 class User(db.Model):
     __tablename__ = 'user'
@@ -161,7 +161,7 @@ def add_comma(value):
 #     else:
 #         return render_template("login.html")
 
-@app.route('/', methods=['POST', 'GET'])
+@application.route('/', methods=['POST', 'GET'])
 def login():
     user = User.query.filter(
     User.username == request.form.get("login_user")).first()
@@ -172,7 +172,7 @@ def login():
         return render_template("index.html")
 
 #sign up route for users
-@app.route('/register', methods=['POST', 'GET'])
+@application.route('/register', methods=['POST', 'GET'])
 def register():
     if request.method == 'POST':
         new_username = request.form['user']
@@ -190,7 +190,7 @@ def register():
 
 #dashboard full data route
 #data contain full history of stocks
-@app.route('/dashboard/data/<stock_name>', methods=['POST', 'GET'])
+@application.route('/dashboard/data/<stock_name>', methods=['POST', 'GET'])
 def data(stock_name):
     if request.method == 'GET':
         user_name = session["user"]
@@ -222,7 +222,7 @@ def data(stock_name):
 
 #dashboard route
 #will contain current price, 5d stock shortlist, plot, calculations
-@app.route('/dashboard/<stock_nm>', methods=['POST', 'GET'])
+@application.route('/dashboard/<stock_nm>', methods=['POST', 'GET'])
 def dashboard(stock_nm):
     if request.method == 'GET':
         user_name = session["user"]
@@ -277,7 +277,7 @@ def dashboard(stock_nm):
 
 #route to filter out stocks that fits the criteria
 #main route / homepage after logging in
-@app.route('/stockmon/<stockmon_filter>', methods=['POST', 'GET'])
+@application.route('/stockmon/<stockmon_filter>', methods=['POST', 'GET'])
 def stockmon(stockmon_filter):
     if request.method == 'GET':
         user_name = session["user"]
@@ -335,11 +335,11 @@ def stockmon(stockmon_filter):
                     pass
 
         monitorList = sorted(monitorList, key=lambda k: k['Name'])            
-        return render_template('stockmon.html',user_name=user_name, add_comma=add_comma, date_time=date_time, monitorList=monitorList)
+        return render_template('stockmon.html',stockmon_filter=stockmon_filter,user_name=user_name, add_comma=add_comma, date_time=date_time, monitorList=monitorList)
         
         return render_template('stockmon.html',user_name=user_name, add_comma=add_comma, date_time=date_time, monitorList=monitorList)
 
-@app.route('/watchlist/<user_name>', methods=['POST', 'GET'])
+@application.route('/watchlist/<user_name>', methods=['POST', 'GET'])
 def watchlist(user_name):
     #stocks = Watchlist.query.filter(Watchlist.username == session.get("user")).all()
     # user=str(user_name)
@@ -362,7 +362,7 @@ def watchlist(user_name):
     return render_template('watchlist.html',user_name=user_name,add_comma=add_comma,date_time=date_time,userlist=userlist)
 
 
-@app.route('/addwatchlist/<stock_cd>', methods=['POST', 'GET'])
+@application.route('/addwatchlist/<stock_cd>', methods=['POST', 'GET'])
 def add_list(stock_cd):
     stock_nm = stock_cd
     user = session["user"]
@@ -379,7 +379,7 @@ def add_list(stock_cd):
 
     # return redirect(request.referrer)
 
-@app.route('/remove/<int:list_id>', methods=['POST', 'GET'])
+@application.route('/remove/<int:list_id>', methods=['POST', 'GET'])
 def remove(list_id):
     task_to_delete = Watchlist.query.get_or_404(list_id)
     user = session["user"]
@@ -390,7 +390,7 @@ def remove(list_id):
     except:
         return 'There was a problem deleting that task'
 
-@app.route('/feedback', methods=['POST', 'GET'])
+@application.route('/feedback', methods=['POST', 'GET'])
 def feedback():
     user_name = session["user"]
     tz=pytz.timezone('Australia/Adelaide')
@@ -411,7 +411,7 @@ def feedback():
     else:
         return render_template('feedback.html',user_name=user_name, date_time=date_time)
 
-@app.route('/checkfeedback', methods=['POST', 'GET'])
+@application.route('/checkfeedback', methods=['POST', 'GET'])
 def checkfeedback():
     user_name = session["user"]
     tz=pytz.timezone('Australia/Adelaide')
@@ -422,11 +422,11 @@ def checkfeedback():
     
     return render_template('checkfeedback.html',user_name=user_name, feedbacks=feedbacks, date_time=date_time)
 
-@app.route('/logout')
+@application.route('/logout')
 def logout():
     session.clear()
     return redirect('/')
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    application.run(debug=True)
 
