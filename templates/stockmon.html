@@ -17,9 +17,6 @@
 </style>
 
 {% endblock %} {% block body %}
-<!-- <div class="container">
-    <H5>Stock Monitor</H5>
-  </div> -->
 <div class="container">
   <h3 style="font-family: Poppins, sans-serif">StockMonitor</h3>
 </div>
@@ -47,7 +44,7 @@
 </div>
 
 <br />
-<div style="overflow-y: scroll; height: 650px">
+<div>
   <div class="container">
     <table>
       <tr style="background-color: rgba(150, 150, 150, 0.863)">
@@ -70,21 +67,14 @@
       </tr>
       {% for stock in monitorList %}
       <tr style="text-align: right">
-        <td
-          style="
-            text-align: center;
-            font-weight: bold;
-            color: rgb(69, 104, 219);
-          "
-        >
-          <!-- <form action="/dashboard" method="POST">
-                  <input type="text" value="{{stock.Name}}" name="stock_name" id="stock_name" size="3">
-                  <input type="submit" value="dash">
-              </form> -->
-          <a style="font-size: larger" href="/dashboard/{{stock.Name}}"
-            >{{stock.Name}}</a
-          >
+        <td style="text-align: center">
+          <div>
+            <a style="font-size: larger" href="/dashboard/{{stock.Name}}"
+              >{{stock.Name}}</a
+            >
+          </div>
         </td>
+
         <td style="text-align: center">
           <a
             style="padding: 2px"
