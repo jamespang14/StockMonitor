@@ -71,6 +71,12 @@ def plot_graph(stock):
     graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
     return graphJSON
 
+def dump_Pandas_Timestamp (ts):
+    result = ""
+    result += str(ts.year) + "-" + str(ts.month) + "-" + str(ts.day)
+    #result += " " + zeroX(ts.hour) + ":" + zeroX(ts.minute) + ":" + zeroX(ts.second)
+    return result
+
 #Calculate VWAP
 def typicalPrice(high, low, close, volume):
     typical_price = (high+low+close)/3.0
@@ -199,23 +205,37 @@ def data(stock_name):
         now = datetime.now(tz)
         date_time = now.strftime("%d/%m/%Y, %H:%M")
         
-        with open('stock_data/'+stock_display_nm+'.csv') as csv_file:
-            data = csv.reader(csv_file, delimiter=',')
-            first_line = True
-            sdatas = []
-            for row in data:
-                if not first_line:
-                    sdatas.append({
-                        "Date": row[0],
-                        "AdjClose": float(row[1]),
-                        "Close": float(row[2]),
-                        "High": float(row[3]),
-                        "Low": float(row[4]),
-                        "Open": float(row[5]),
-                        "Volume": int(row[6])
-                    })
-                else:
-                    first_line = False
+        # with open('stock_data/'+stock_display_nm+'.csv') as csv_file:
+        #     data = csv.reader(csv_file, delimiter=',')
+        #     first_line = True
+        #     sdatas = []
+        #     for row in data:
+        #         if not first_line:
+        #             sdatas.append({
+        #                 "Date": row[0],
+        #                 "AdjClose": float(row[1]),
+        #                 "Close": float(row[2]),
+        #                 "High": float(row[3]),
+        #                 "Low": float(row[4]),
+        #                 "Open": float(row[5]),
+        #                 "Volume": int(row[6])
+        #             })
+        #         else:
+        #             first_line = False
+        ticker = yf.Ticker(stock_display_nm)
+        df=ticker.history(period="360d")
+        df.reset_index(inplace = True)
+
+        sdatas = []
+        for i in range(len(df["Date"])):
+            sdatas.append({
+                "Date": dump_Pandas_Timestamp(df["Date"][i]),
+                "Close": df["Close"][i],
+                "High": df["High"][i],
+                "Low": df["Low"][i],
+                "Open": df["Open"][i],
+                "Volume": df["Volume"][i]
+            })
 
         return render_template("data.html",user_name=user_name, add_comma=add_comma, sdatas=sdatas, stock_display_nm=stock_display_nm, date_time=date_time)
     return render_template('data.html')
@@ -249,23 +269,39 @@ def dashboard(stock_nm):
         date_time = now.strftime("%d/%m/%Y, %H:%M")
         plot = plot_graph(stock_nm)
 
-        with open('stock_data/'+stock_nm+'.csv') as csv_file:
-            data = csv.reader(csv_file, delimiter=',')
-            first_line = True
-            sdatas = []
-            for row in data:
-                if not first_line:
-                    sdatas.append({
-                        "Date": row[0],
-                        "AdjClose": float(row[1]),
-                        "Close": float(row[2]),
-                        "High": float(row[3]),
-                        "Low": float(row[4]),
-                        "Open": float(row[5]),
-                        "Volume": int(row[6])
-                    })
-                else:
-                    first_line = False
+        # with open('stock_data/'+stock_nm+'.csv') as csv_file:
+        #     data = csv.reader(csv_file, delimiter=',')
+        #     first_line = True
+        #     sdatas = []
+        #     for row in data:
+        #         if not first_line:
+        #             sdatas.append({
+        #                 "Date": row[0],
+        #                 "AdjClose": float(row[1]),
+        #                 "Close": float(row[2]),
+        #                 "High": float(row[3]),
+        #                 "Low": float(row[4]),
+        #                 "Open": float(row[5]),
+        #                 "Volume": int(row[6])
+        #             })
+        #         else:
+        #             first_line = False
+        ticker = yf.Ticker(stock_nm)
+        df=ticker.history(period="360d")
+        df.reset_index(inplace = True)
+
+        sdatas = []
+        for i in range(len(df["Date"])):
+            sdatas.append({
+                "Date": dump_Pandas_Timestamp(df["Date"][i]),
+                "Close": df["Close"][i],
+                "High": df["High"][i],
+                "Low": df["Low"][i],
+                "Open": df["Open"][i],
+                "Volume": df["Volume"][i]
+
+            })
+
         vwap,vwap_180 = VWAP(sdatas)
         vwap = float(vwap)
         vwap_180 = float(vwap_180)
@@ -317,8 +353,8 @@ def stockmon(stockmon_filter):
                                 "Volume":int(rows[360][6]),
                                 "vol6m":vol6m,
                                 "vol12m":vol12m,
-                                "CV":int(float(rows[360][2])*int(rows[360][6]))
-                            }
+                                "CV":int(float(rows[360][2])*int(rows[360][6])),
+                                }
                             if element['change_high'] > 0 and element['change_open'] > 0 and element['change_low'] > 0 and element['change_close'] > 0 and element['change_volume'] > 0 and element['Volume']>element['vol6m']:
                                 if stockmon_filter == "3days":
                                     if element['change_close_1'] > 0 and element['change_close_2'] > 0:
@@ -337,7 +373,43 @@ def stockmon(stockmon_filter):
         monitorList = sorted(monitorList, key=lambda k: k['Name'])            
         return render_template('stockmon.html',stockmon_filter=stockmon_filter,user_name=user_name, add_comma=add_comma, date_time=date_time, monitorList=monitorList)
         
-        return render_template('stockmon.html',user_name=user_name, add_comma=add_comma, date_time=date_time, monitorList=monitorList)
+#dashboard route
+#will contain current price, 5d stock shortlist, plot, calculations
+@application.route('/modal/<stock_nm>', methods=['POST', 'GET'])
+def modal(stock_nm):
+    if request.method == 'GET':
+        user_name = session["user"]
+        if len(str(stock_nm)) > 7:
+            stock_nm = stock_nm.replace('?stock_name=', '')
+        #stock_nm = request.form['stock_name']
+        stock_nm = stock_nm + ".AX"
+        stock_display_nm = str(stock_nm)
+        stock_display_nm = stock_nm.replace('.AX', '')
+
+        ticker = yf.Ticker(stock_nm)
+        df=ticker.history(period="360d")
+        df.reset_index(inplace = True)
+
+        sdatas = []
+        for i in range(len(df["Date"])):
+            sdatas.append({
+                "Date": dump_Pandas_Timestamp(df["Date"][i]),
+                "Close": df["Close"][i],
+                "High": df["High"][i],
+                "Low": df["Low"][i],
+                "Open": df["Open"][i],
+                "Volume": df["Volume"][i]
+
+            })
+
+        vwap,vwap_180 = VWAP(sdatas)
+        vwap = float(vwap)
+        vwap_180 = float(vwap_180)
+        avg_volume, avg_volume_180 = average_volume(sdatas)
+        avg_volume = int(avg_volume)
+        avg_volume_180 = int(avg_volume_180)
+        return render_template("modal.html",user_name=user_name,add_comma=add_comma, avg_volume = avg_volume, avg_volume_180=avg_volume_180,vwap_180=vwap_180 , vwap = vwap , sdatas=sdatas, stock_display_nm=stock_display_nm)
+    return "Something went wrong"
 
 @application.route('/watchlist/<user_name>', methods=['POST', 'GET'])
 def watchlist(user_name):

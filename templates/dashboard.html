@@ -1,330 +1,255 @@
-{% extends 'content.html' %}
+{% extends 'content.html' %} {% block head %}
+<title>Dashboard</title>
+<style>
+  html {
+    height: 100%;
+    width: 100%;
+  }
+  body {
+    min-height: 100%;
+  }
+  table,
+  th,
+  td {
+    border: 1px solid rgba(139, 138, 138, 0.555);
+    border-collapse: collapse;
+    padding-right: 10px;
+    padding-left: 10px;
+    white-space: nowrap;
+  }
+</style>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
 
-{% block head %}
-  <title>Dashboard</title>
-  <style>
-    html {
-      height: 100%;
-      width: 100%;
-    }
-    body {
-      min-height: 100%;
-    }
-    table, th, td {
-        border: 1px solid rgba(139, 138, 138, 0.555);
-        border-collapse: collapse;
-        padding-right:10px;
-        padding-left:10px;
-        white-space: nowrap;
-    }
-  </style>
-  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+{% endblock %} {% block body %}
+<br />
+<div class="container">
+  <a href="javascript:history.back()" class="btn btn-primary"
+    ><i class="fas fa-desktop"></i> Back to list</a
+  >
+</div>
+<div style="overflow-y: scroll; height: 700px">
+  <section class="main">
+    <div class="container">
+      <h4>Short List (Previous 5 trading days)</h4>
+      <table>
+        <tr>
+          <th style="padding-right: 10px">Date</th>
+          {% for sdata in sdatas %} {% if loop.index > 355 %}
+          <td style="padding-right: 7px">{{ sdata.Date }}</td>
+          {% endif %} {% endfor %}
+        </tr>
+        <tr>
+          <th style="padding-right: 10px">Open</th>
+          {% for sdata in sdatas %} {% if loop.index > 355 %} {% if sdata.Open
+          >= 0.1 %}
+          <td style="padding-right: 7px">${{ '%0.2f' % sdata.Open|float }}</td>
+          {% endif %} {% if sdata.Open < 0.1 %}
+          <td style="padding-right: 7px">${{ '%0.3f' % sdata.Open|float }}</td>
+          {% endif %} {% endif %} {% endfor %}
+        </tr>
+        <tr>
+          <th style="padding-right: 10px"></th>
+          {% for sdata in sdatas %} {% if loop.index > 355 %} {% set change_open
+          = sdata.Open - sdatas[loop.index-2].Open %} {% if change_open >= 0 %}
+          {% if sdata.Open >= 0.1 %}
+          <td style="color: green">${{ '%0.2f' % change_open|float }}</td>
+          {% endif %} {% if sdata.Open < 0.1 %}
+          <td style="color: green">${{ '%0.3f' % change_open|float }}</td>
+          {% endif %} {% endif %} {% if change_open < 0 %} {% if sdata.Open >=
+          0.1 %}
+          <td style="color: red">${{ '%0.2f' % change_open|float }}</td>
+          {% endif %} {% if sdata.Open < 0.1 %}
+          <td style="color: red">${{ '%0.3f' % change_open|float }}</td>
+          {% endif %} {% endif %} {% endif %} {% endfor %}
+        </tr>
+        <tr>
+          <th style="padding-right: 10px">Close</th>
+          {% for sdata in sdatas %} {% if loop.index > 355 %} {% if sdata.Open
+          >= 0.1 %}
+          <td style="padding-right: 7px">${{ '%0.2f' % sdata.Close|float }}</td>
+          {% endif %} {% if sdata.Open < 0.1 %}
+          <td style="padding-right: 7px">${{ '%0.3f' % sdata.Close|float }}</td>
+          {% endif %} {% endif %} {% endfor %}
+        </tr>
+        <tr>
+          <th style="padding-right: 10px"></th>
+          {% for sdata in sdatas %} {% if loop.index > 355 %} {% set
+          change_close = sdata.Close - sdatas[loop.index-2].Close %} {% if
+          change_close >= 0 %} {% if sdata.Open >= 0.1 %}
+          <td style="color: green">${{ '%0.2f' % change_close|float }}</td>
+          {% endif %} {% if sdata.Open < 0.1 %}
+          <td style="color: green">${{ '%0.3f' % change_close|float }}</td>
+          {% endif %} {% endif %} {% if change_close < 0 %} {% if sdata.Open >=
+          0.1 %}
+          <td style="color: red">${{ '%0.2f' % change_close|float }}</td>
+          {% endif %} {% if sdata.Open < 0.1 %}
+          <td style="color: red">${{ '%0.3f' % change_close|float }}</td>
+          {% endif %} {% endif %} {% endif %} {% endfor %}
+        </tr>
+        <tr>
+          <th style="padding-right: 10px">High</th>
+          {% for sdata in sdatas %} {% if loop.index > 355 %} {% if sdata.Open
+          >= 0.1 %}
+          <td style="padding-right: 7px">${{ '%0.2f' % sdata.High|float }}</td>
+          {% endif %} {% if sdata.Open < 0.1 %}
+          <td style="padding-right: 7px">${{ '%0.3f' % sdata.High|float }}</td>
+          {% endif %} {% endif %} {% endfor %}
+        </tr>
+        <tr>
+          <th style="padding-right: 10px"></th>
+          {% for sdata in sdatas %} {% if loop.index > 355 %} {% set change_high
+          = sdata.High - sdatas[loop.index-2].High %} {% if change_high >= 0 %}
+          {% if sdata.Open >= 0.1 %}
+          <td style="color: green">${{ '%0.2f' % change_high|float }}</td>
+          {% endif %} {% if sdata.Open < 0.1 %}
+          <td style="color: green">${{ '%0.3f' % change_high|float }}</td>
+          {% endif %} {% endif %} {% if change_high < 0 %} {% if sdata.Open >=
+          0.1 %}
+          <td style="color: red">${{ '%0.2f' % change_high|float }}</td>
+          {% endif %} {% if sdata.Open < 0.1 %}
+          <td style="color: red">${{ '%0.3f' % change_high|float }}</td>
+          {% endif %} {% endif %} {% endif %} {% endfor %}
+        </tr>
+        <tr>
+          <th style="padding-right: 10px">Low</th>
+          {% for sdata in sdatas %} {% if loop.index > 355 %} {% if sdata.Open
+          >= 0.1 %}
 
-{% endblock %}
+          <td style="padding-right: 7px">${{ '%0.2f' % sdata.Low|float }}</td>
+          {% endif %} {% if sdata.Open < 0.1 %}
 
-{% block body %}
- <br> <div class="container"><a href="javascript:history.back()" class="btn btn-primary"><i class="fas fa-desktop"></i> Back to list</a></div>
-  <div style="overflow-y: scroll; height: 700px;">
-    <section class="main">
-      <div class="container">
-        <h4>Short List (Previous 5 trading days)</h4>
-        <table>
-          <tr>
-            <th style = "padding-right:10px">Date</th>
-            {% for sdata in sdatas %}
-            {% if loop.index > 355 %}
-            <td style = "padding-right:7px">{{ sdata.Date }}</td>
-            {% endif %}
-            {% endfor %}
-          </tr>
-          <tr>
-            <th style = "padding-right:10px">Open</th>
-            {% for sdata in sdatas %}
-            {% if loop.index > 355 %}
-            {% if sdata.Open >= 0.1 %}
-            <td style = "padding-right:7px">${{ '%0.2f' % sdata.Open|float }}</td>
-            {% endif %}
-            {% if sdata.Open < 0.1 %}
-            <td style = "padding-right:7px">${{ '%0.3f' % sdata.Open|float }}</td>
-            {% endif %}
-            {% endif %}
-            {% endfor %}
-          </tr>
-          <tr>
-            <th style = "padding-right:10px"></th>
-            {% for sdata in sdatas %}
-            {% if loop.index > 355 %}
-            {% set change_open = sdata.Open - sdatas[loop.index-2].Open %}
-              {% if change_open >= 0 %}
-              {% if sdata.Open >= 0.1 %}
-              <td style = "color:green">${{ '%0.2f' % change_open|float }}</td>
-              {% endif %}
-              {% if sdata.Open < 0.1 %}
-              <td style = "color:green">${{ '%0.3f' % change_open|float }}</td>
-              {% endif %}
-              
-              {% endif %}
-              {% if change_open < 0 %}
-              {% if sdata.Open >= 0.1 %}
-              <td style = "color:red">${{ '%0.2f' % change_open|float }}</td>
-              {% endif %}
-              {% if sdata.Open < 0.1 %}
-              <td style = "color:red">${{ '%0.3f' % change_open|float }}</td>
-              {% endif %}
-              
-              {% endif %}
-            {% endif %}
-            {% endfor %}
-          </tr>
-          <tr>
-            <th style = "padding-right:10px">Close</th>
-            {% for sdata in sdatas %}
-            {% if loop.index > 355 %}
-            {% if sdata.Open >= 0.1 %}
-            <td style = "padding-right:7px">${{ '%0.2f' % sdata.Close|float }}</td>
-              {% endif %}
-              {% if sdata.Open < 0.1 %}
-              <td style = "padding-right:7px">${{ '%0.3f' % sdata.Close|float }}</td>
-              {% endif %}
-            
-            {% endif %}
-            {% endfor %}
-          </tr>
-          <tr>
-            <th style = "padding-right:10px"></th>
-            {% for sdata in sdatas %}
-            {% if loop.index > 355 %}
-            {% set change_close = sdata.Close - sdatas[loop.index-2].Close %}
-              {% if change_close >= 0 %}
-              {% if sdata.Open >= 0.1 %}
-              <td style = "color:green">${{ '%0.2f' % change_close|float }}</td>
-              {% endif %}
-              {% if sdata.Open < 0.1 %}
-              <td style = "color:green">${{ '%0.3f' % change_close|float }}</td>
-              {% endif %}
-              
-              {% endif %}
-              {% if change_close < 0 %}
-              {% if sdata.Open >= 0.1 %}
-              <td style = "color:red">${{ '%0.2f' % change_close|float }}</td>
-              {% endif %}
-              {% if sdata.Open < 0.1 %}
-              <td style = "color:red">${{ '%0.3f' % change_close|float }}</td>
-              {% endif %}
-              
-              {% endif %}
-            {% endif %}
-            {% endfor %}
-          </tr>
-          <tr>
-            <th style = "padding-right:10px">High</th>
-            {% for sdata in sdatas %}
-            {% if loop.index > 355 %}
-            {% if sdata.Open >= 0.1 %}
-            <td style = "padding-right:7px">${{ '%0.2f' % sdata.High|float }}</td>
-              {% endif %}
-              {% if sdata.Open < 0.1 %}
-              <td style = "padding-right:7px">${{ '%0.3f' % sdata.High|float }}</td>
-              {% endif %}
-            
-            {% endif %}
-            {% endfor %}
-          </tr>
-          <tr>
-            <th style = "padding-right:10px"></th>
-            {% for sdata in sdatas %}
-            {% if loop.index > 355 %}
-            {% set change_high = sdata.High - sdatas[loop.index-2].High %}
-              {% if change_high >= 0 %}
-              {% if sdata.Open >= 0.1 %}
-              <td style = "color:green">${{ '%0.2f' % change_high|float }}</td>
-              {% endif %}
-              {% if sdata.Open < 0.1 %}
-              <td style = "color:green">${{ '%0.3f' % change_high|float }}</td>
-              {% endif %}
-              
-              {% endif %}
-              {% if change_high < 0 %}
-              {% if sdata.Open >= 0.1 %}
-              <td style = "color:red">${{ '%0.2f' % change_high|float }}</td>
-              {% endif %}
-              {% if sdata.Open < 0.1 %}
-              <td style = "color:red">${{ '%0.3f' % change_high|float }}</td>
-              {% endif %}
-              
-              {% endif %}
-            {% endif %}
-            {% endfor %}
-          </tr>
-          <tr>
-            <th style = "padding-right:10px">Low</th>
-            {% for sdata in sdatas %}
-            {% if loop.index > 355 %}
-            {% if sdata.Open >= 0.1 %}
+          <td style="padding-right: 7px">${{ '%0.3f' % sdata.Low|float }}</td>
+          {% endif %} {% endif %} {% endfor %}
+        </tr>
+        <tr>
+          <th style="padding-right: 10px"></th>
+          {% for sdata in sdatas %} {% if loop.index > 355 %} {% set change_low
+          = sdata.Low - sdatas[loop.index-2].Low %} {% if change_low >= 0 %} {%
+          if sdata.Open >= 0.1 %}
+          <td style="color: green">${{ '%0.2f' % change_low|float }}</td>
+          {% endif %} {% if sdata.Open < 0.1 %}
+          <td style="color: green">${{ '%0.3f' % change_low|float }}</td>
+          {% endif %} {% endif %} {% if change_low < 0 %} {% if sdata.Open >=
+          0.1 %}
+          <td style="color: red">${{ '%0.2f' % change_low|float }}</td>
+          {% endif %} {% if sdata.Open < 0.1 %}
+          <td style="color: red">${{ '%0.3f' % change_low|float }}</td>
+          {% endif %} {% endif %} {% endif %} {% endfor %}
+        </tr>
 
-            <td style = "padding-right:7px">${{ '%0.2f' % sdata.Low|float }}</td>
-              {% endif %}
-              {% if sdata.Open < 0.1 %}
-              
-            <td style = "padding-right:7px">${{ '%0.3f' % sdata.Low|float }}</td>
-              {% endif %}
-            {% endif %}
-            {% endfor %}
-          </tr>
-          <tr>
-            <th style = "padding-right:10px"></th>
-            {% for sdata in sdatas %}
-            {% if loop.index > 355 %}
-            {% set change_low = sdata.Low - sdatas[loop.index-2].Low %}
-              {% if change_low >= 0 %}
-              {% if sdata.Open >= 0.1 %}
-              <td style = "color:green">${{ '%0.2f' % change_low|float }}</td>
-              {% endif %}
-              {% if sdata.Open < 0.1 %}
-              <td style = "color:green">${{ '%0.3f' % change_low|float }}</td>
-              {% endif %}
-              
-              {% endif %}
-              {% if change_low < 0 %}
-              {% if sdata.Open >= 0.1 %}
-              <td style = "color:red">${{ '%0.2f' % change_low|float }}</td>
-              {% endif %}
-              {% if sdata.Open < 0.1 %}
-              <td style = "color:red">${{ '%0.3f' % change_low|float }}</td>
-              {% endif %}
-              
-              {% endif %}
-            {% endif %}
-            {% endfor %}
-          </tr>
-          
-          <tr>
-            <th style = "padding-right:10px">Volume</th>
-            {% for sdata in sdatas %}
-            {% if loop.index > 355 %}
-            <td style = "padding-right:7px">{{ add_comma(sdata.Volume) }}</td>
-            {% endif %}
-            {% endfor %}
-          </tr>
-          <tr>
-            <th style = "padding-right:10px"></th>
-            {% for sdata in sdatas %}
-            {% if loop.index > 355 %}
-            {% set change_vol = sdata.Volume - sdatas[loop.index-2].Volume %}
-              {% if change_vol >= 0 %}
-              
-              <td style = "color:green">{{ add_comma(change_vol) }}</td>
-              {% endif %}
-              {% if change_vol < 0 %}
-              
-              <td style = "color:red">{{ add_comma(change_vol) }}</td>
-              {% endif %}
-            {% endif %}
-            {% endfor %}
-          </tr>
-          <tr>
-            <th style = "padding-right:10px">6mAvgVol</th>
-            <td style = "padding-right:7px">{{add_comma(avg_volume_180)}}</td>
-          </tr>
-          <tr>
-            <th style = "padding-right:10px"></th>
-            {% for sdata in sdatas %}
-            {% if loop.index > 355 %}
-            {% set change_vol_6m = sdata.Volume - avg_volume_180 %}
-              {% if change_vol_6m >= 0 %}
-              
-              <td style = "color:green">{{ add_comma(change_vol_6m) }}</td>
-              {% endif %}
-              {% if change_vol_6m < 0 %}
-              
-              <td style = "color:red">{{ add_comma(change_vol_6m) }}</td>
-              {% endif %}
-            {% endif %}
-            {% endfor %}
-          </tr>
-          <tr>
-            <th style = "padding-right:10px">12mAvgVol</th>
-            <td style = "padding-right:7px">{{add_comma(avg_volume)}}</td>
-          </tr>
-          <tr>
-            <th style = "padding-right:10px"></th>
-            {% for sdata in sdatas %}
-            {% if loop.index > 355 %}
-            {% set change_vol_12m = sdata.Volume - avg_volume %}
-              {% if change_vol_12m >= 0 %}
-              
-              <td style = "color:green">{{ add_comma(change_vol_12m) }}</td>
-              {% endif %}
-              {% if change_vol_12m < 0 %}
-              
-              <td style = "color:red">{{ add_comma(change_vol_12m) }}</td>
-              {% endif %}
-            {% endif %}
-            {% endfor %}
-          </tr>
-          <tr>
-            <th style = "padding-right:10px">VWAP6m</th>
-            <td style = "padding-right:7px">${{'%0.2f' % vwap_180|float}}</td>
-          </tr>
-          <tr>
-            <th style = "padding-right:10px">VWAP12m</th>
-            <td style = "padding-right:7px">${{'%0.2f' % vwap|float}}</td>
-          </tr>
+        <tr>
+          <th style="padding-right: 10px">Volume</th>
+          {% for sdata in sdatas %} {% if loop.index > 355 %}
+          <td style="padding-right: 7px">{{ add_comma(sdata.Volume) }}</td>
+          {% endif %} {% endfor %}
+        </tr>
+        <tr>
+          <th style="padding-right: 10px"></th>
+          {% for sdata in sdatas %} {% if loop.index > 355 %} {% set change_vol
+          = sdata.Volume - sdatas[loop.index-2].Volume %} {% if change_vol >= 0
+          %}
+
+          <td style="color: green">{{ add_comma(change_vol) }}</td>
+          {% endif %} {% if change_vol < 0 %}
+
+          <td style="color: red">{{ add_comma(change_vol) }}</td>
+          {% endif %} {% endif %} {% endfor %}
+        </tr>
+        <tr>
+          <th style="padding-right: 10px">6mAvgVol</th>
+          <td style="padding-right: 7px">{{add_comma(avg_volume_180)}}</td>
+        </tr>
+        <tr>
+          <th style="padding-right: 10px"></th>
+          {% for sdata in sdatas %} {% if loop.index > 355 %} {% set
+          change_vol_6m = sdata.Volume - avg_volume_180 %} {% if change_vol_6m
+          >= 0 %}
+
+          <td style="color: green">{{ add_comma(change_vol_6m) }}</td>
+          {% endif %} {% if change_vol_6m < 0 %}
+
+          <td style="color: red">{{ add_comma(change_vol_6m) }}</td>
+          {% endif %} {% endif %} {% endfor %}
+        </tr>
+        <tr>
+          <th style="padding-right: 10px">12mAvgVol</th>
+          <td style="padding-right: 7px">{{add_comma(avg_volume)}}</td>
+        </tr>
+        <tr>
+          <th style="padding-right: 10px"></th>
+          {% for sdata in sdatas %} {% if loop.index > 355 %} {% set
+          change_vol_12m = sdata.Volume - avg_volume %} {% if change_vol_12m >=
+          0 %}
+
+          <td style="color: green">{{ add_comma(change_vol_12m) }}</td>
+          {% endif %} {% if change_vol_12m < 0 %}
+
+          <td style="color: red">{{ add_comma(change_vol_12m) }}</td>
+          {% endif %} {% endif %} {% endfor %}
+        </tr>
+        <tr>
+          <th style="padding-right: 10px">VWAP6m</th>
+          <td style="padding-right: 7px">${{'%0.2f' % vwap_180|float}}</td>
+        </tr>
+        <tr>
+          <th style="padding-right: 10px">VWAP12m</th>
+          <td style="padding-right: 7px">${{'%0.2f' % vwap|float}}</td>
+        </tr>
       </table>
-      <br>
-      <th style = "padding:10px"><a href="/dashboard/data/{{stock_display_nm}}" class="btn btn-primary">12m History</a></th>
-      
-      </div>
-      <div class="container">
-        <br>
-        <div>
-          <div class="card" style="width:320px">
-            <div class="card-body">
-              <h2 class="card-title">{{ stock_display_nm }}</h2>
-              <h4 class="card-text">Current Price: ${{ '%0.2f' % current_price|float }}</h4>
-              <h4>Sector: </h4>
-              <h4>{{ sector_info }}</h4>
-              <a href="/addwatchlist/{{stock_display_nm}}" class="btn btn-primary">Add Watchlist</a>
-              <!-- <a href="#" class="btn btn-primary">See CF & BS</a>  -->
-              <a href="https://www2.asx.com.au/markets/trade-our-cash-market/announcements.{{stock_display_nm}}" class="btn btn-primary">News</a>     
-            </div>
+      <br />
+      <th style="padding: 10px">
+        <a href="/dashboard/data/{{stock_display_nm}}" class="btn btn-primary"
+          >12m History</a
+        >
+      </th>
+    </div>
+    <div class="container">
+      <br />
+      <div>
+        <div class="card" style="width: 320px">
+          <div class="card-body">
+            <h2 class="card-title">{{ stock_display_nm }}</h2>
+            <h4 class="card-text">
+              Current Price: ${{ '%0.2f' % current_price|float }}
+            </h4>
+            <h4>Sector:</h4>
+            <h4>{{ sector_info }}</h4>
+            <a href="/addwatchlist/{{stock_display_nm}}" class="btn btn-primary"
+              >Add Watchlist</a
+            >
+            <!-- <a href="#" class="btn btn-primary">See CF & BS</a>  -->
+            <a
+              href="https://www2.asx.com.au/markets/trade-our-cash-market/announcements.{{stock_display_nm}}"
+              class="btn btn-primary"
+              >News</a
+            >
           </div>
         </div>
-        <br>
-        <div>
-          <h5>Intra-day:</h5> <a href="#" class="btn btn-primary">Today</a><br>
-          {% set price_chg = current_price-sdatas[359].Open %}
-          {% set pct_chg = (current_price-sdatas[359].Open)/sdatas[359].Open %}
-          Price change: ${{ '%0.2f' % price_chg|float }}
-          <br>
-          Pct change: {{ '%0.2f' % pct_chg|float }}%
-          <br><br>
-        </div>
       </div>
-      
-    </section>
-
-    <div class = "container">
-      <h5>OHLC Chart</h5>
-      <div class = "chart" id='stock_chart'>
-        <script>
-          var graphs = {{plot | safe}};
-          Plotly.plot('stock_chart',graphs,{});
-        </script>
+      <br />
+      <div>
+        <h5>Intra-day:</h5>
+        <a href="#" class="btn btn-primary">Today</a><br />
+        {% set price_chg = current_price-sdatas[358].Open %} {% set pct_chg =
+        (current_price-sdatas[358].Open)/sdatas[358].Open %} Price change: ${{
+        '%0.2f' % price_chg|float }}
+        <br />
+        Pct change: {{ '%0.2f' % pct_chg|float }}%
+        <br /><br />
       </div>
     </div>
-  
-    
-  
- 
-    {% endblock %}
-<!--
-data order: open, close, high, low, volume
-date format change dd-mm-yyyy 
-308,713 all volumes field
-two decimal
-intraday trades
-top 20 share holders
-12m plot graph
--->
+  </section>
+
+  <div class="container">
+    <h5>OHLC Chart</h5>
+    <div class="chart" id="stock_chart">
+      <script>
+        var graphs = {{plot | safe}};
+        Plotly.plot('stock_chart',graphs,{});
+      </script>
+    </div>
+  </div>
+
+  {% endblock %}
+</div>
