@@ -161,7 +161,7 @@
           <td style="padding-right: 7px">{{add_comma(avg_volume_180)}}</td>
         </tr>
         <tr>
-          <th style="padding-right: 10px"></th>
+          <th style="padding-right: 10px">vs Today</th>
           {% for sdata in sdatas %} {% if loop.index > 355 %} {% set
           change_vol_6m = sdata.Volume - avg_volume_180 %} {% if change_vol_6m
           >= 0 %}
@@ -177,7 +177,7 @@
           <td style="padding-right: 7px">{{add_comma(avg_volume)}}</td>
         </tr>
         <tr>
-          <th style="padding-right: 10px"></th>
+          <th style="padding-right: 10px">vs Today</th>
           {% for sdata in sdatas %} {% if loop.index > 355 %} {% set
           change_vol_12m = sdata.Volume - avg_volume %} {% if change_vol_12m >=
           0 %}
