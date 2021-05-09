@@ -226,18 +226,18 @@
             >
           </div>
         </div>
+        <div>
+          <h5>Intra-day:</h5>
+          <a href="#" class="btn btn-primary">Today</a><br />
+          {% set price_chg = current_price-sdatas[358].Open %} {% set pct_chg =
+          (current_price-sdatas[358].Open)/sdatas[358].Open %} Price change: ${{
+          '%0.2f' % price_chg|float }}
+          <br />
+          Pct change: {{ '%0.2f' % pct_chg|float }}%
+          <br /><br />
+        </div>
       </div>
       <br />
-      <div>
-        <h5>Intra-day:</h5>
-        <a href="#" class="btn btn-primary">Today</a><br />
-        {% set price_chg = current_price-sdatas[358].Open %} {% set pct_chg =
-        (current_price-sdatas[358].Open)/sdatas[358].Open %} Price change: ${{
-        '%0.2f' % price_chg|float }}
-        <br />
-        Pct change: {{ '%0.2f' % pct_chg|float }}%
-        <br /><br />
-      </div>
     </div>
   </section>
 
