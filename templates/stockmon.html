@@ -99,6 +99,7 @@
 {% endblock %} {% block body %}
 <div class="container">
   <h3 style="font-family: Poppins, sans-serif">StockMonitor</h3>
+  <h6 style="font-family: Poppins, sans-serif">Data updated: 11/05/2021</h6>
 </div>
 <div class="container">
   <h6 style="font-family: Poppins, sans-serif">Stocks filtered by price of:</h6>
@@ -225,13 +226,28 @@
           >
         </td>
         <td style="text-align: center">
-          <a
-            style="padding: 2px"
-            class="btn btn-outline-primary btn-sm"
-            href="https://www2.asx.com.au/markets/trade-our-cash-market/announcements.{{stock.Name}}"
-            target="_blank"
-            >Link</a
-          >
+          <button class="modal-button" href="#News{{stock.Name}}">Link</button>
+
+          <!-- The Modal -->
+          <div id="News{{stock.Name}}" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+              <div class="modal-header">
+                <h2>{{stock.Name}}</h2>
+                <span class="close">×</span>
+              </div>
+              <div class="modal-body">
+                <object
+                  type="text/html"
+                  data="https://www2.asx.com.au/markets/trade-our-cash-market/announcements.{{stock.Name}}"
+                  width="100%"
+                  height="500px"
+                  style="overflow: auto"
+                ></object>
+              </div>
+              <div class="modal-footer"></div>
+            </div>
+          </div>
         </td>
         <!-- <td>{{stock.Sector}}</td> -->
         {% if stock.Open >= 0.1 %}

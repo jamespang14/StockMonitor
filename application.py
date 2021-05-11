@@ -205,23 +205,6 @@ def data(stock_name):
         now = datetime.now(tz)
         date_time = now.strftime("%d/%m/%Y, %H:%M")
         
-        # with open('stock_data/'+stock_display_nm+'.csv') as csv_file:
-        #     data = csv.reader(csv_file, delimiter=',')
-        #     first_line = True
-        #     sdatas = []
-        #     for row in data:
-        #         if not first_line:
-        #             sdatas.append({
-        #                 "Date": row[0],
-        #                 "AdjClose": float(row[1]),
-        #                 "Close": float(row[2]),
-        #                 "High": float(row[3]),
-        #                 "Low": float(row[4]),
-        #                 "Open": float(row[5]),
-        #                 "Volume": int(row[6])
-        #             })
-        #         else:
-        #             first_line = False
         ticker = yf.Ticker(stock_display_nm)
         df=ticker.history(period="360d")
         df.reset_index(inplace = True)
@@ -269,23 +252,6 @@ def dashboard(stock_nm):
         date_time = now.strftime("%d/%m/%Y, %H:%M")
         plot = plot_graph(stock_nm)
 
-        # with open('stock_data/'+stock_nm+'.csv') as csv_file:
-        #     data = csv.reader(csv_file, delimiter=',')
-        #     first_line = True
-        #     sdatas = []
-        #     for row in data:
-        #         if not first_line:
-        #             sdatas.append({
-        #                 "Date": row[0],
-        #                 "AdjClose": float(row[1]),
-        #                 "Close": float(row[2]),
-        #                 "High": float(row[3]),
-        #                 "Low": float(row[4]),
-        #                 "Open": float(row[5]),
-        #                 "Volume": int(row[6])
-        #             })
-        #         else:
-        #             first_line = False
         ticker = yf.Ticker(stock_nm)
         df=ticker.history(period="360d")
         df.reset_index(inplace = True)
@@ -313,6 +279,78 @@ def dashboard(stock_nm):
 
 #route to filter out stocks that fits the criteria
 #main route / homepage after logging in
+@application.route('/refresh/<stockmon_filter>', methods=['POST', 'GET'])
+def refresh(stockmon_filter):
+    if request.method == 'GET':
+        user_name = session["user"]
+        tz=pytz.timezone('Australia/Adelaide')
+        now = datetime.now(tz)
+        date_time = now.strftime("%d/%m/%Y, %H:%M")
+        monitorList = []
+        for filename in glob.glob("./stock_data/*.csv"):
+            stock_nm = filename
+            stock_nm=stock_nm.replace('./stock_data/', '')
+            stock_nm=stock_nm.replace('.AX.csv', '')
+            #vol6m, vol12m = stockmon_volume(filename)
+
+            ticker = yf.Ticker(stock_nm)
+            df=ticker.history(period="360d")
+            df.reset_index(inplace = True)
+            sdatas = []
+            for i in range(len(df["Date"])):
+                sdatas.append({
+                    "Date": dump_Pandas_Timestamp(df["Date"][i]),
+                    "Close": df["Close"][i],
+                    "High": df["High"][i],
+                    "Low": df["Low"][i],
+                    "Open": df["Open"][i],
+                    "Volume": df["Volume"][i]
+
+                })
+            try:
+                if float(rows[360][2])<5 and int(float(rows[360][2])*int(rows[360][6])) > 100000:
+                    if int(rows[360][6]) > 0 and int(rows[360][6]) < 1600000000:
+                        element = {
+                            "Name": stock_nm,
+                            "change_high": float(rows[360][3])-float(rows[359][3]),
+                            "change_open": float(rows[360][5])-float(rows[359][5]),
+                            "change_low": float(rows[360][4])-float(rows[359][4]),
+                            "change_close_4": float(rows[356][2])-float(rows[355][2]),
+                            "change_close_3": float(rows[357][2])-float(rows[356][2]),
+                            "change_close_2": float(rows[358][2])-float(rows[357][2]),
+                            "change_close_1": float(rows[359][2])-float(rows[358][2]),
+                            "change_close": float(rows[360][2])-float(rows[359][2]),
+                            "change_volume": int(rows[360][6])-int(rows[359][6]),
+                            "High":float(rows[360][3]),
+                            "Open":float(rows[360][5]),
+                            "Close":float(rows[360][2]),
+                            "Low":float(rows[360][4]),
+                            "Volume":int(rows[360][6]),
+                            "vol6m":vol6m,
+                            "vol12m":vol12m,
+                            "CV":int(float(rows[360][2])*int(rows[360][6])),
+                            }
+                        if element['change_high'] > 0 and element['change_open'] > 0 and element['change_low'] > 0 and element['change_close'] > 0 and element['change_volume'] > 0:
+                            if stockmon_filter == "3days":
+                                if element['change_close_1'] > 0 and element['change_close_2'] > 0:
+                                    monitorList.append(element)
+                            if stockmon_filter == "4days":
+                                if element['change_close_1'] > 0 and element['change_close_2'] > 0 and element['change_close_3'] > 0:
+                                    monitorList.append(element)
+                            if stockmon_filter == "5days":
+                                if element['change_close_1'] > 0 and element['change_close_2'] > 0 and element['change_close_3'] > 0 and element['change_close_4'] > 0:
+                                    monitorList.append(element)
+                            if stockmon_filter == "1day":
+                                monitorList.append(element)
+            
+            except:
+                pass   
+
+        monitorList = sorted(monitorList, key=lambda k: k['Name'])            
+        return render_template('refresh.html',stockmon_filter=stockmon_filter,user_name=user_name, add_comma=add_comma, date_time=date_time, monitorList=monitorList)
+
+#route to filter out stocks that fits the criteria
+#for real time data
 @application.route('/stockmon/<stockmon_filter>', methods=['POST', 'GET'])
 def stockmon(stockmon_filter):
     if request.method == 'GET':
@@ -373,7 +411,7 @@ def stockmon(stockmon_filter):
         monitorList = sorted(monitorList, key=lambda k: k['Name'])            
         return render_template('stockmon.html',stockmon_filter=stockmon_filter,user_name=user_name, add_comma=add_comma, date_time=date_time, monitorList=monitorList)
         
-#dashboard route
+#modal route
 #will contain current price, 5d stock shortlist, plot, calculations
 @application.route('/modal/<stock_nm>', methods=['POST', 'GET'])
 def modal(stock_nm):
