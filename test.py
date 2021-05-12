@@ -24,7 +24,7 @@ def search_stock(stock_name):
             "Volume": df["Volume"][i]
         })
 
-    print(sdatas[34]["High"])
+    print(sdatas[358])
 
 def dash(stock_nm):
     with open('stock_data/'+stock_nm+'.csv') as csv_file:
@@ -44,7 +44,7 @@ def dash(stock_nm):
                     })
                 else:
                     first_line = False
-    print(sdatas['High'])
+    print(sdatas[0])
 
 
 search_stock("CBA.AX")

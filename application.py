@@ -293,7 +293,7 @@ def refresh(stockmon_filter):
             stock_nm=stock_nm.replace('.AX.csv', '')
             #vol6m, vol12m = stockmon_volume(filename)
 
-            ticker = yf.Ticker(stock_nm+".AX")
+            ticker = yf.Ticker(stock_nm)
             df=ticker.history(period="360d")
             df.reset_index(inplace = True)
             sdatas = []
