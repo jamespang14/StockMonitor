@@ -61,9 +61,9 @@ def average_volume(sdatas):
 
 def format_df(monitor_list):
     formatted_list = ""
-    formatted_list = "Name  Close  High  Low  Open  Volume  change  C*V \n"
+    formatted_list = "Name\tClose\tHigh\tLow\tOpen\tVolume\tchange\tC*V \n"
     for stock in monitor_list:
-        formatted_list=formatted_list+str(stock["Name"])+" "+str(stock["Close"])+" "+str(stock["High"])+" "+str(stock["Low"])+" "+str(stock["Open"])+" "+str(stock["Volume"])+" "+str(stock["change_close"])+" "+str(stock["CV"])+'\n'
+        formatted_list=formatted_list+str(stock["Name"])+"\t"+str(stock["Close"])+"\t"+str(stock["High"])+"\t"+str(stock["Low"])+"\t"+str(stock["Open"])+"\t"+str(stock["Volume"])+"\t"+str(stock["change_close"])+"\t"+str(stock["CV"])+'\n'
     
     return formatted_list
 
@@ -130,19 +130,19 @@ monitorList_3day = sorted(monitorList_3day, key=lambda k: k['Name'])
 monitorList_4day = sorted(monitorList_4day, key=lambda k: k['Name'])
 monitorList_5day = sorted(monitorList_5day, key=lambda k: k['Name'])
 
-msg1_day = format_df(monitorList_1day)
-msg3_day = format_df(monitorList_3day)
-msg4_day = format_df(monitorList_4day)
-msg5_day = format_df(monitorList_5day)
+msg_1day = format_df(monitorList_1day)
+msg_3day = format_df(monitorList_3day)
+msg_4day = format_df(monitorList_4day)
+msg_5day = format_df(monitorList_5day)
 
-print("1day: /n")
-print(msg1_day)
-print("3day: /n")
-print(msg1_day)
-print("4day: /n")
-print(msg1_day)
-print("5day: /n")
-print(msg1_day)
+print("1day: ")
+print(msg_1day)
+print("3day: ")
+print(msg_3day)
+print("4day: ")
+print(msg_4day)
+print("5day: ")
+print(msg_5day)
 
 message = f"""\
 Subject: Stockmon automated email test
