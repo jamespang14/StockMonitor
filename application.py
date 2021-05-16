@@ -331,7 +331,7 @@ def refresh():
                         "change_volume": int(sdatas[359]["Volume"])-int(sdatas[358]["Volume"]),
                         "vol6m":vol6m,
                         "vol12m":vol12m,
-                        "CV":int(float(sdatas[359]["Close"])*int(sdatas[359]["Close"])),
+                        "CV":int(float(sdatas[359]["Close"])*int(sdatas[359]["Volume"])),
                     }
                     if element['change_high'] > 0 and element['change_open'] > 0 and element['change_low'] > 0 and element['change_close'] > 0 and element['change_volume'] > 0 and element['Volume']>element['vol6m']:
                         monitorList_1day.append(element)

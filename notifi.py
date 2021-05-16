@@ -15,33 +15,6 @@ monitorList_3day = []
 monitorList_4day = []
 monitorList_5day = []
 
-#Calculate VWAP
-def typicalPrice(high, low, close, volume):
-    typical_price = (high+low+close)/3.0
-    typical_price_by_period_volume = typical_price*volume
-    return typical_price_by_period_volume
-
-def VWAP(sdatas):
-    cumulative_tp = 0.0
-    cumulative_volume = 0
-
-    sdatas_180 = sdatas[-180:]
-    cumulative_tp_180 = 0.0
-    cumulative_volume_180 = 0
-
-    for sdata in sdatas:
-        cumulative_tp = cumulative_tp+typicalPrice(sdata['High'], sdata['Low'], sdata['Close'], sdata['Volume'])
-        cumulative_volume = cumulative_volume+ sdata['Volume']
-
-    for sdata_180 in sdatas_180:
-        cumulative_tp_180 = cumulative_tp+typicalPrice(sdata_180['High'], sdata_180['Low'], sdata_180['Close'], sdata_180['Volume'])
-        cumulative_volume_180 = cumulative_volume+ sdata_180['Volume']
-    
-    vwap = cumulative_tp/cumulative_volume
-    vwap_180 = cumulative_tp_180/cumulative_volume_180
-
-    return vwap, vwap_180
-
 # function to calculate average volume
 def average_volume(sdatas):
     volume = 0.0
@@ -63,10 +36,9 @@ def format_df(monitor_list):
     formatted_list = ""
     formatted_list = "Name\tClose\tHigh\tLow\tOpen\tVolume\tchange\tC*V \n"
     for stock in monitor_list:
-        formatted_list=formatted_list+str(stock["Name"])+"\t"+str(stock["Close"])+"\t"+str(stock["High"])+"\t"+str(stock["Low"])+"\t"+str(stock["Open"])+"\t"+str(stock["Volume"])+"\t"+str(stock["change_close"])+"\t"+str(stock["CV"])+'\n'
+        formatted_list=formatted_list+str(stock["Name"])+"  "+str(stock["Close"])+"  "+str(stock["High"])+"  "+str(stock["Low"])+"  "+str(stock["Open"])+"  "+str(stock["Volume"])+"  "+str(stock["change_close"])+"  "+str(stock["CV"])+'\n'
     
     return formatted_list
-
 
 ctr = 1
 for filename in glob.glob("./stock_data/*.csv"):
@@ -111,7 +83,7 @@ for filename in glob.glob("./stock_data/*.csv"):
                 "change_volume": int(sdatas[359]["Volume"])-int(sdatas[358]["Volume"]),
                 "vol6m":vol6m,
                 "vol12m":vol12m,
-                "CV":int(float(sdatas[359]["Close"])*int(sdatas[359]["Close"])),
+                "CV":int(float(sdatas[359]["Close"])*int(sdatas[359]["Volume"])),
             }
             if element['change_high'] > 0 and element['change_open'] > 0 and element['change_low'] > 0 and element['change_close'] > 0 and element['change_volume'] > 0 and element['Volume']>element['vol6m']:
                 monitorList_1day.append(element)
