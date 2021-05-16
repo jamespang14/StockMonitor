@@ -279,19 +279,22 @@ def dashboard(stock_nm):
 
 #route to filter out stocks that fits the criteria
 #main route / homepage after logging in
-@application.route('/refresh/<stockmon_filter>', methods=['POST', 'GET'])
-def refresh(stockmon_filter):
+@application.route('/refresh/', methods=['POST', 'GET'])
+def refresh():
     if request.method == 'GET':
         user_name = session["user"]
         tz=pytz.timezone('Australia/Adelaide')
         now = datetime.now(tz)
         date_time = now.strftime("%d/%m/%Y, %H:%M")
-        monitorList = []
+
+        monitorList_1day = []
+        monitorList_3day = []
+        monitorList_4day = []
+        monitorList_5day = []
         for filename in glob.glob("./stock_data/*.csv"):
             stock_nm = filename
             stock_nm=stock_nm.replace('./stock_data/', '')
             stock_nm=stock_nm.replace('.AX.csv', '')
-            #vol6m, vol12m = stockmon_volume(filename)
 
             ticker = yf.Ticker(stock_nm+".AX")
             df=ticker.history(period="360d")
@@ -308,46 +311,45 @@ def refresh(stockmon_filter):
 
                 })
             try:
-                if float(rows[360][2])<5 and int(float(rows[360][2])*int(rows[360][6])) > 100000:
-                    if int(rows[360][6]) > 0 and int(rows[360][6]) < 1600000000:
-                        element = {
-                            "Name": stock_nm,
-                            "change_high": float(rows[360][3])-float(rows[359][3]),
-                            "change_open": float(rows[360][5])-float(rows[359][5]),
-                            "change_low": float(rows[360][4])-float(rows[359][4]),
-                            "change_close_4": float(rows[356][2])-float(rows[355][2]),
-                            "change_close_3": float(rows[357][2])-float(rows[356][2]),
-                            "change_close_2": float(rows[358][2])-float(rows[357][2]),
-                            "change_close_1": float(rows[359][2])-float(rows[358][2]),
-                            "change_close": float(rows[360][2])-float(rows[359][2]),
-                            "change_volume": int(rows[360][6])-int(rows[359][6]),
-                            "High":float(rows[360][3]),
-                            "Open":float(rows[360][5]),
-                            "Close":float(rows[360][2]),
-                            "Low":float(rows[360][4]),
-                            "Volume":int(rows[360][6]),
-                            "vol6m":vol6m,
-                            "vol12m":vol12m,
-                            "CV":int(float(rows[360][2])*int(rows[360][6])),
-                            }
-                        if element['change_high'] > 0 and element['change_open'] > 0 and element['change_low'] > 0 and element['change_close'] > 0 and element['change_volume'] > 0:
-                            if stockmon_filter == "3days":
-                                if element['change_close_1'] > 0 and element['change_close_2'] > 0:
-                                    monitorList.append(element)
-                            if stockmon_filter == "4days":
-                                if element['change_close_1'] > 0 and element['change_close_2'] > 0 and element['change_close_3'] > 0:
-                                    monitorList.append(element)
-                            if stockmon_filter == "5days":
-                                if element['change_close_1'] > 0 and element['change_close_2'] > 0 and element['change_close_3'] > 0 and element['change_close_4'] > 0:
-                                    monitorList.append(element)
-                            if stockmon_filter == "1day":
-                                monitorList.append(element)
+                vol6m, vol12m = average_volume(sdatas)
+                if sdatas[359]["Close"]*sdatas[359]["Volume"] > 100000:
+                    element = {
+                        "Name": stock_nm,
+                        "High":sdatas[359]["High"],
+                        "Open":sdatas[359]["Open"],
+                        "Close":sdatas[359]["Close"],
+                        "Low":sdatas[359]["Low"],
+                        "Volume":sdatas[359]["Volume"],
+                        "change_high": float(sdatas[359]["High"])-float(sdatas[358]["High"]),
+                        "change_open": float(sdatas[359]["Open"])-float(sdatas[358]["Open"]),
+                        "change_low": float(sdatas[359]["Low"])-float(sdatas[358]["Low"]),
+                        "change_close_4": float(sdatas[355]["Close"])-float(sdatas[354]["Close"]),
+                        "change_close_3": float(sdatas[356]["Close"])-float(sdatas[355]["Close"]),
+                        "change_close_2": float(sdatas[357]["Close"])-float(sdatas[356]["Close"]),
+                        "change_close_1": float(sdatas[358]["Close"])-float(sdatas[357]["Close"]),
+                        "change_close": float(sdatas[359]["Close"])-float(sdatas[358]["Close"]),
+                        "change_volume": int(sdatas[359]["Volume"])-int(sdatas[358]["Volume"]),
+                        "vol6m":vol6m,
+                        "vol12m":vol12m,
+                        "CV":int(float(sdatas[359]["Close"])*int(sdatas[359]["Close"])),
+                    }
+                    if element['change_high'] > 0 and element['change_open'] > 0 and element['change_low'] > 0 and element['change_close'] > 0 and element['change_volume'] > 0 and element['Volume']>element['vol6m']:
+                        monitorList_1day.append(element)
+                        if element['change_close_1'] > 0 and element['change_close_2'] > 0:
+                            monitorList_3day.append(element)
+                        if element['change_close_1'] > 0 and element['change_close_2'] > 0 and element['change_close_3'] > 0:
+                            monitorList_4day.append(element)
+                        if element['change_close_1'] > 0 and element['change_close_2'] > 0 and element['change_close_3'] > 0 and element['change_close_4'] > 0:
+                            monitorList_5day.append(element)
             
             except:
                 pass   
 
-        monitorList = sorted(monitorList, key=lambda k: k['Name'])            
-        return render_template('refresh.html',stockmon_filter=stockmon_filter,user_name=user_name, add_comma=add_comma, date_time=date_time, monitorList=monitorList)
+        monitorList_1day = sorted(monitorList_1day, key=lambda k: k['Name'])
+        monitorList_3day = sorted(monitorList_2day, key=lambda k: k['Name']) 
+        monitorList_4day = sorted(monitorList_3day, key=lambda k: k['Name'])
+        monitorList_5day = sorted(monitorList_3day, key=lambda k: k['Name'])          
+        return render_template('refresh.html', monitorList_5day=monitorList_5day, monitorList_4day=monitorList_4day, monitorList_3day=monitorList_3day, monitorList_1day=monitorList_1day,stockmon_filter=stockmon_filter,user_name=user_name, add_comma=add_comma, date_time=date_time)
 
 #route to filter out stocks that fits the criteria
 #for real time data
@@ -466,7 +468,8 @@ def watchlist(user_name):
             "Date_added":stock.date_added,
             "Added_price":float(stock.current_price),
             "Current_price":temp,
-            "Price_change": float(stock.current_price)-temp
+            "Price_change": float(stock.current_price)-temp,
+            "percentage": (float(stock.current_price)-temp)/float(stock.current_price)
         }
         userlist.append(element)
     return render_template('watchlist.html',user_name=user_name,add_comma=add_comma,date_time=date_time,userlist=userlist)
