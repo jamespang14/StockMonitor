@@ -23,8 +23,8 @@ class User(db.Model):
     user_id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(200), nullable=False)
     password = db.Column(db.String(200), nullable=False)
-    date_created = db.Column(db.DateTime, default=datetime.now("%d/%m/%Y"))
-    date_updated = db.Column(db.DateTime, default=datetime.now("%d/%m/%Y"))
+    date_created = db.Column(db.DateTime, default=datetime.now())
+    date_updated = db.Column(db.DateTime, default=datetime.now())
 
     def __repr__(self):
         return '<Task %r>' % self.user_id
@@ -34,7 +34,7 @@ class Watchlist(db.Model):
     list_id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(200), nullable=False)
     stock_code = db.Column(db.String(200), nullable=False)
-    date_added = db.Column(db.DateTime, default=datetime.now("%d/%m/%Y"))
+    date_added = db.Column(db.DateTime, default=datetime.now())
     current_price = db.Column(db.Numeric, nullable=False)
 
     def __repr__(self):
