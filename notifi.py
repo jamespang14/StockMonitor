@@ -167,6 +167,6 @@ server.starttls()
 server.ehlo()
 server.login(sender_email,password)
 server.sendmail(sender_email,receiver_email,message)
-server.sendmail(sender_email,receiver_email,message)
+server.sendmail(sender_email,andrew_email,message)
 
 server.quit()
