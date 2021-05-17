@@ -395,7 +395,7 @@ def stockmon(stockmon_filter):
                                 "vol12m":vol12m,
                                 "CV":int(float(rows[360][2])*int(rows[360][6])),
                                 }
-                            if element['change_high'] > 0 and element['change_open'] > 0 and element['change_low'] > 0 and element['change_close'] > 0 and element['change_volume'] > 0 and element['Volume']>element['vol6m']:
+                            if element['change_high'] > 0 and element['change_open'] > 0 and element['change_low'] > 0 and element['change_close'] > 0 and element['change_volume'] > 0 and element['Volume']>element['vol6m'] and element['Volume']>element['vol12m']:
                                 if stockmon_filter == "3days":
                                     if element['change_close_1'] > 0 and element['change_close_2'] > 0:
                                         monitorList.append(element)
