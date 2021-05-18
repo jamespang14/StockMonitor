@@ -4,10 +4,10 @@ import stock as st
 import yfinance as yf
 import glob
 
-sender_email = "jamespang14@gmail.com"
+sender_email = "stockmonitoradelaide@gmail.com"
 receiver_email = "jamespang14@gmail.com"
 andrew_email = "andrew@availer.com"
-password = "cal060996633"
+password = "Cal060996633"
 smtp_server = 'smtp.gmail.com'
 
 monitorList_1day = []
@@ -64,7 +64,7 @@ for filename in glob.glob("./stock_data/*.csv"):
 
     try:
         vol6m, vol12m = average_volume(sdatas)
-        if sdatas[359]["Close"]*sdatas[359]["Volume"] > 100000:
+        if sdatas[359]["Close"]*sdatas[359]["Volume"] > 100000 and sdatas[359]["Close"] < 5:
             element = {
                 "Name": stock_nm,
                 "High":sdatas[359]["High"],
