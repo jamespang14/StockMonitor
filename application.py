@@ -367,12 +367,13 @@ def stockmon(stockmon_filter):
             stock_nm=stock_nm.replace('./stock_data/', '')
             stock_nm=stock_nm.replace('.AX.csv', '')
             vol6m, vol12m = stockmon_volume(filename)
-            update_date = str(row[360][0])
+            
             with open(filename) as csv_file:
                 data = csv.reader(csv_file)
                 rows = list(data)
-
+                
                 try:
+                    update_date = str(rows[359][0])
                     if float(rows[360][2])<5 and int(float(rows[360][2])*int(rows[360][6])) > 100000:
                         if int(rows[360][6]) > 0 and int(rows[360][6]) < 1600000000:
                             element = {
