@@ -361,12 +361,13 @@ def stockmon(stockmon_filter):
         now = datetime.now(tz)
         date_time = now.strftime("%d/%m/%Y, %H:%M")
         monitorList = []
+        update_date = ""
         for filename in glob.glob("./stock_data/*.csv"):
             stock_nm = filename
             stock_nm=stock_nm.replace('./stock_data/', '')
             stock_nm=stock_nm.replace('.AX.csv', '')
             vol6m, vol12m = stockmon_volume(filename)
-
+            update_date = str(row[360][0])
             with open(filename) as csv_file:
                 data = csv.reader(csv_file)
                 rows = list(data)
@@ -409,9 +410,9 @@ def stockmon(stockmon_filter):
                                     monitorList.append(element)
                 except:
                     pass
-
+        
         monitorList = sorted(monitorList, key=lambda k: k['Name'])            
-        return render_template('stockmon.html',stockmon_filter=stockmon_filter,user_name=user_name, add_comma=add_comma, date_time=date_time, monitorList=monitorList)
+        return render_template('stockmon.html',update_date=update_date, stockmon_filter=stockmon_filter,user_name=user_name, add_comma=add_comma, date_time=date_time, monitorList=monitorList)
         
 #modal route
 #will contain current price, 5d stock shortlist, plot, calculations
