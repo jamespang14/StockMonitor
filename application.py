@@ -373,7 +373,7 @@ def stockmon(stockmon_filter):
                 rows = list(data)
                 
                 try:
-                    update_date = str(rows[359][0])
+                    
                     if float(rows[360][2])<5 and int(float(rows[360][2])*int(rows[360][6])) > 100000:
                         if int(rows[360][6]) > 0 and int(rows[360][6]) < 1600000000:
                             element = {
@@ -398,6 +398,7 @@ def stockmon(stockmon_filter):
                                 "CV":int(float(rows[360][2])*int(rows[360][6])),
                                 }
                             if element['change_high'] > 0 and element['change_open'] > 0 and element['change_low'] > 0 and element['change_close'] > 0 and element['change_volume'] > 0 and element['Volume']>element['vol6m'] and element['Volume']>element['vol12m']:
+                                update_date = str(rows[359][0])
                                 if stockmon_filter == "3days":
                                     if element['change_close_1'] > 0 and element['change_close_2'] > 0:
                                         monitorList.append(element)
