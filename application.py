@@ -397,7 +397,7 @@ def stockmon(stockmon_filter):
                                 "vol12m":vol12m,
                                 "CV":int(float(rows[360][2])*int(rows[360][6])),
                                 }
-                            if element['change_high'] > 0 and element['change_open'] > 0 and element['change_low'] > 0 and element['change_close'] > 0 and element['change_volume'] > 0 and element['Volume']>element['vol6m'] and element['Volume']>element['vol12m']:
+                            if element['CV']>250000 and element['change_high'] > 0 and element['change_open'] > 0 and element['change_low'] > 0 and element['change_close'] > 0 and element['change_volume'] > 0 and element['Volume']>element['vol6m'] and element['Volume']>element['vol12m']:
                                 update_date = str(rows[360][0])
                                 if stockmon_filter == "3days":
                                     if element['change_close_1'] > 0 and element['change_close_2'] > 0:
